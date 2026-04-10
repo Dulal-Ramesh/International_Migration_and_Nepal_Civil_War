@@ -28,7 +28,7 @@ user <- Sys.getenv("USER")    # detects your Mac/Linux username automatically
 
 if (user == "rameshdulal") {
   dropbox <- "/Users/rameshdulal/Library/CloudStorage/Dropbox"
-  github  <- "/Users/rameshdulal/Documents/Web Portfolio/Nepal-Civil-War-and-Int-Migration"
+  github  <- "/Users/rameshdulal/Documents/Web Portfolio/Dissertation/International_Migration_and_Nepal_Civil_War"
   
 } else if (user == "paghosh") {            # ← replace with your username. In your console type Sys.getenv("USER") to find your username
   dropbox <- "/Users/paghosh/Dropbox"      # ← replace with your actual Dropbox path
@@ -48,15 +48,15 @@ if (user == "rameshdulal") {
 
 # ── All other paths built from roots (same for everyone) ─────────────────── #
 modified_data <- file.path(dropbox, "Nepal Civil Conflict/Data/Modified_Data")
-r_scripts     <- file.path(github,  "source_code")
-figures       <- file.path(github,  "figures")
+r_scripts     <- file.path(github,  "R_Codes")
+figures       <- file.path(github,  "Paper/Figures")
 
 # ── Table output folders by category ─────────────────────────────────────── #
-tables_summary    <- file.path(github, "tables/Tables_Summary")
-tables_main       <- file.path(github, "tables/Tables_Main")
-tables_robustness <- file.path(github, "tables/Tables_Robustness")
-tables_heterogen  <- file.path(github, "tables/Tables_Heterogeneity")
-tables_mechanism  <- file.path(github, "tables/Tables_Mechanisms")
+tables_summary    <- file.path(github, "Paper/Tables/Tables_Summary")
+tables_main       <- file.path(github, "Paper/Tables/Tables_Main")
+tables_robustness <- file.path(github, "Paper/Tables/Tables_Robustness")
+tables_heterogen  <- file.path(github, "Paper/Tables/Tables_Heterogeneity")
+tables_mechanism  <- file.path(github, "Paper/Tables/Tables_Mechanisms")
 
 
 # ==============================================================================
