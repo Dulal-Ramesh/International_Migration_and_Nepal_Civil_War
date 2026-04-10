@@ -1,0 +1,124 @@
+# Nepal-Civil-War-and-Int-Migration
+
+This repository is related to the investigation into the impact of civil conflict (Maoist revolution) of 1996-2006 in Nepal on the international migration. We try to investigate whether the increasing labor migration from Nepal was a result of exposure to civil conflict during their childhood.
+
+## Conflict Intensity
+
+### Conflict Intensity Based on the Months of War
+
+We calculated the conflict intensity based on the months of conflict. The civil conflict lasted for 131 months. 
+
+$$
+\begin{equation}
+\text{conflict}_{d 1}
+=\text{months of war}_{d}
+=\sum_{m=1}^{131} 1(\text{casualty}_{d m}).
+\end{equation}
+$$
+
+$$
+1(\text{casualty}_{dm})=
+\begin{cases}
+1, & \text{if } \text{casualty}_{dm}>0,\\
+0, & \text{otherwise.}
+\end{cases}
+$$
+
+*Conflict<sub>d1</sub>* is the intensity based on month of war. It is the sum of 1 or 0 in each 131 months. *1(casualty<sub>dm</sub>)* takes value 1 if casualty in a district in a month is greater than 0 else *1(casualty<sub>dm</sub>)* takes value 0. The conflict intensity based on this index has the following distribution:
+![Conflict Intensity based on Months of War](figures/month_of_war_intensity.png)
+
+### Conflict Intensity Based on the Number of Casualties
+
+In addition to above calculation we computed the conflict intensity based on the number of casualties. 
+
+$$
+\begin{equation}
+\text{conflict}_{d 2}
+=\text{number of casualty}_{d}
+=\sum_{m=1}^{131} \text{casualty}_{d m}.
+\end{equation}
+$$
+
+*Conflict<sub>d2</sub>* is the second measure of intensity based on the number of casualties. It is the sum of casualty number over the conflict period in each district. The intensity of conflict based on this index has the following distribution:
+![Conflict Intensity based on Number of Casualties](figures/number_of_any_casualty.png)
+
+## Empirical Strategy
+
+We estimate the following model
+
+$$
+\begin{equation}
+y_{itdc} = \alpha + \beta_{c}(Conflict \quad Exposure_{d}\times \lambda_{c}) + \lambda_{c} + \delta_t + \eta_{d} + X'_{i} + \varepsilon_{itdc},
+\end{equation}
+$$
+
+where $y$ is an binary outcome variable for individual $i$ going abroad or not in the year $t$, from district $d$ and cohort $c$, $Conflict \quad Exposure_d$ indicates the different measures for exposure to war in district $d$, $\lambda$ represents the cohort,  $\lambda_{c}$ denotes cohort fixed effect, $\delta_{t}$ is the year fixed effect and $\eta_{d}$ represents district fixed effects. $\varepsilon$ is a random, idiosyncratic error term. The coefficient $\beta$ captures the average treatment effect on the treated. $X^{'}_{i}$ represents the individual level controls including the individual's sex, educational attainment and ethnicity.
+
+## Variables
+
+### Outcome Variables
+
+- *international_absentee_only*: This outcome variable is created from Absentee Dataset which includes individuals abroad at the time of survey. 
+
+- *national*: This outcome variable is created from Absentee Dataset which includes only the individuals migrating inside the country at the time of survey.
+
+- *international_migrant*: This outcome variable is created from Absentee Dataset which includes individuals abroad at the time of survey and from Individual Dataset which includes individuals who had been abroad ever for at least for 3 months.
+
+- *present_ind_migrant*: This outcome variable is created from Non-Absentee Dataset (Individual present during survey) which includes the individual who travelled abroad ever for at least for 3 months.
+
+- *absent*: This outcome variable is derived from the Absentee Dataset and it includes all the absent sample (internal or international) at the time of survey.
+
+### Conflict Exposure Variable (Dependent Variable)
+
+- *mwar_own_any*: Months of war.
+
+- *mwar_own_fatal*: Months of war based on all fatal death.
+
+- *cas_own_any*: Number of casualties.
+
+- *cas_own_fatal*: Number of casualties based on fatal death.
+
+### Definition of Cohorts
+
+This paper is based on categorizing the sample into treatment and control group based on their age in 1996. The Cohorts are defined on the following basis:<br>
+- **Treatment1**: 0-5 years in 1996; Sample who are included in the following category:<br>
+age at start of conflict $\geq 0$ & age at start of conflict $\leq 5$ and current age $\geq 18$ & current age $\leq 45$
+- **Treatment2**: 6-12 years in 1996; Sample who are included in the following category: <br>
+age at start of conflict $\geq 6$ & age at start of conflict $\leq 12$ and current age $\geq 18$ & current age $\leq 45$
+- **Treatment3**: 13-17 years in 1996; Sample who are included in the following category: <br>
+age at start of conflict $\geq 13$ & age at start of conflict $\leq 17$ and current age $\geq 18$ & current age $\leq 45$
+- **Control1**: 18-25 years in 1996; Sample who are included in the following category: <br>
+age at start of conflict $\geq 18$ & age at start of conflict $\leq 25$ and current age $\geq 47$ & current age $\leq 65$
+- **Control2**: 26-35 years in 1996; Sample who are included in the following category: <br>
+age at start of conflict $\geq 26$ & age at start of conflict $\leq 35$ and current age $\geq 47$ & current age $\leq 65$
+- **Control3**: 36-40 years in 1996; Sample who are included in the following category: <br>
+age at start of conflict $\geq 36$ & age at start of conflict $\leq 40$ and current age $\geq 47$ & current age $\leq 65$
+
+
+
+
+# Structure of Code
+This folder contains R codes and two folders [functions](/source_code/functions/) which is only a helper function, [STATA_Codes](/source_code/STATA_Codes/) with the stata .do files that are used to clean and create the variables for the main dataset and R codes. Following are the Stata .do files in the [STATA_Codes](/source_code/STATA_Codes/):
+
+- [00_Master_File.do](/source_code/STATA_Codes/00_Master_File.do) runs every other .do files.
+
+- [01_Conflict_Data.do](/source_code/STATA_Codes/01_Conflict_Data.do) imports the conflict data and creates various labels, cleans the data and produces a dataset *conflict_data.dta*.  
+
+- [02_Neighbor_District.do](/source_code/STATA_Codes/02_Neighbor_Districts.do) creates a dataset including the neighboring districts and produces a dataset *neighbor_districts.dta*.
+
+- [03_Conflict_Intensity.do](/source_code/STATA_Codes/03_Conflict_Intensity.do) creates the variable conflict intensity and a dataset *conflict_intensity.dta*.
+
+- [04_Personal_NLFS.do](/source_code/STATA_Codes/04_Personal_NLFS.do) imports the raw NLFS dataset, merges all the sections in the raw data and produces a dataset *personal_nlfs_data.dta*.
+
+- [05_NLFS_Conflict_data.R](/source_code/STATA_Codes/05_NLFS_Conflict_data.R) merges the *personal_nlfs_data.dta* and *conflict_intensity.dta* cleans the merged dataset, and produces the dataset *nlfs_conflict_data.dta*.
+
+- [06_Final_Data.do](/source_code/STATA_Codes/06_Final_Data.do) uses NLFS dataset, merges them and create a data for international migrants and combines with the conflict related variables to produce the final dataset *1_conflict_present_absentee_data.dta*.
+
+The folder [Source Code](/source_code/) contains different code files: [Master](/source_code/00_master.R) which runs all the codes in order, [Setup](/source_code/01_setup.R); contains data paths, packages and global settings,  [Data Cleaning](/source_code/02_data_cleaning.R); Import, clean data, create variables, categorises treatment/control cohorts and intensity of conflict,  [Summary](/source_code/03_summary_statistics.R); produces descriptive statistics, balance check and DiD Framework, [Main Regression](/source_code/04_regression_main.R); includes all main DiD regression, [Robustness Check](/source_code/05_robustness.R); contains codes for sensitivity analysis, [Mechanism Analysis](/source_code/06_mechanism_analysis.R); contains codes for analysis of the channels  and [Helper Function](/source_code/Helper_functions.R) contains codes for formatting the tables and coefficient dictionaries.
+
+## How to Use
+### Option 1: Run Everything at once
+Open [Master](/source_code/00_master.R) and run all the code.
+
+### Option 2: Run each code as per need
+First run [01_setup.R](/source_code/01_setup.R), then [02_data_cleaning.R](/source_code/02_data_cleaning.R) then any other as required. 
