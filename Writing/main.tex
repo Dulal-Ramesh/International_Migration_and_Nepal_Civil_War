@@ -1,0 +1,135 @@
+% ==============================================
+% Journal Article Template (generic, natbib)
+% ==============================================
+\documentclass[11pt]{article}
+
+
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace} % \doublespacing for review copies
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{amsmath, amssymb}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{pdflscape}
+\usepackage{booktabs, threeparttable}
+\usepackage{siunitx}
+\usepackage{makecell} % For keeping the standard errors below mean
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[authoryear,round]{natbib} % <-- natbib for citations
+\usepackage{hyperref}
+\usepackage[nameinlink,noabbrev]{cleveref}
+\usepackage{threeparttable}
+\usepackage{lineno} % uncomment for line numbers during review
+\usepackage{comment}
+
+% ---------- Setup ----------
+\graphicspath{{figures/}}
+\hypersetup{
+colorlinks=true,
+linkcolor=black,
+citecolor=black,
+urlcolor=black
+}
+\sisetup{detect-all, table-number-alignment=center}
+% \linenumbers % enable line numbers if journal requests
+
+
+% Blinded toggle (hide author/acknowledgments for anonymous review)
+\newif\ifblinded
+\blindedfalse % set to \blindedtrue for anonymous submission
+
+
+% Keywords/JEL helpers
+\newcommand{\keywords}[1]{\par\noindent\textbf{Keywords: }#1}
+\newcommand{\jel}[1]{\par\noindent\textbf{JEL Codes: }#1}
+
+
+% ---------- Title/Authors ----------
+\title{Escaping Violence or Trapped by It? Long Run Effects of Civil Conflict on International Migration in Nepal}
+\ifblinded
+\author{}
+\else
+%\author{Ramesh Dulal\\University of Oklahoma \\\texttt{ramesh.dulal@ou.edu}
+%\and Second Author\\Affiliation \\\texttt{email2@domain.edu}}
+%\fi
+%\date{\today}
+
+
+% ==============================================
+\begin{document}
+\maketitle
+\doublespacing % common for econ/csocial-science submissions
+
+
+% ---------- Abstract ----------
+\begin{abstract}
+\input{sections/01_abstract.tex}
+\end{abstract}
+
+
+\ifblinded\else
+%\keywords{Difference-in-Differences; Demography; Natural Experiments; Nepal; Earthquake}
+%\jel{I12, J13, O15}
+\fi
+
+
+% ---------- Main Sections ----------
+\section{Introduction}
+\input{sections/02_intro.tex}
+
+
+\section{Related Literature}
+\input{sections/03_litreview.tex}
+
+
+\section{Data}
+\input{sections/04_data.tex}
+
+\newpage
+\section{Empirical Strategy}
+\input{sections/05_methods.tex}
+
+\newpage
+\section{Results}
+\input{sections/06_results.tex}
+
+\newpage
+\section{Robustness }
+\input{sections/07_robustness.tex}
+
+\newpage
+\section{Heterogeneity Analysis}
+\input{sections/08_heterogeneity}
+
+\newpage
+\section{Channel}
+\input{sections/09_channels}
+
+
+\newpage
+\section{Discussion}
+\input{sections/10_conclusion}
+
+
+\section{Conclusion}
+\input{sections/11_discussion}
+
+
+% ---------- References ----------
+\bibliographystyle{apalike} % swap to journal-required style if needed
+\bibliography{biblio}
+
+
+% ---------- Appendix ----------
+\appendix
+\clearpage
+\begin{center}\Large\textbf{Appendix}\end{center}
+\input{appendix/appendix.tex}
+
+
+\end{document}

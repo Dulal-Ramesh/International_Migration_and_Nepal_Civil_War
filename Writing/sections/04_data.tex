@@ -1,0 +1,52 @@
+\label{sec:data}
+\cite{Bohra-Mishra2011} The conflict intensity variable is defined on the basis of the month of war observed in a certain district. $months \, of \, war_{d}$ is defined as the total number of months, a district was exposed to conflict. This will be used as a baseline variable to represent the conflict intensity. This variable is constructed as below:
+\begin{equation}
+\text{conflict}_{d 1}
+=\text{months of war}_{d}
+=\sum_{m=1}^{131} 1(\text{casualty}_{d m}).
+\label{eq:months_of_war}
+\end{equation}
+\[
+1(\text{casualty}_{dm})=
+\begin{cases}
+1, & \text{if } \text{casualty}_{dm}>0,\\
+0, & \text{otherwise.}
+\end{cases}
+\]
+Subscripts $d$ and $m$ represent district and month of war. $m$ takes the value upto 131 due to the fact that the Maoist conflict reigned from February 1996 to November 2006 with total of 131 months.
+%\newpage
+%\input{tables/Descriptive Statistics}
+
+\newpage
+\input{Summary Tables/Overall Summary}
+
+%\newpage
+%\input{tables/Descriptive Statistics by Treatment}
+
+\newpage
+\input{Summary Tables/Summary Stat by Treatment }
+
+%\newpage
+%\input{tables/Descriptive Statistics by Cohort}
+
+\newpage
+\input{Summary Tables/Summary Stat by Cohort}
+
+\newpage
+\input{Summary Tables/Summary by Conflict Intensity}
+
+%\newpage
+%\input{tables/Balance Table}
+
+\newpage
+\input{Summary Tables/T-test of Differenct}
+
+%\newpage
+%\input{tables/DID Framework Table}
+%\vspace{3cm}
+%\includegraphics[width=0.8\textwidth]{figures/Figure1_DID_Framework.png}
+
+\newpage
+\input{Summary Tables/DID table War Based}
+\vspace{3cm}
+\input{Summary Tables/DID table Casualty Based}
