@@ -6,7 +6,7 @@ This repository is related to the investigation into the impact of civil conflic
 
 In order to view the preliminary tables please use the following link. You can view the summary statistics or regression results from this link.
 
-[Results](https://dulal-ramesh.github.io/International_Migration_and_Nepal_Civil_War/)
+<a href="https://dulal-ramesh.github.io/International_Migration_and_Nepal_Civil_War/" target="_blank">👉  Results</a>
 
 ## Conflict Intensity
 
