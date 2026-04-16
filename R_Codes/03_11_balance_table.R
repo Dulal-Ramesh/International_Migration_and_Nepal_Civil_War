@@ -317,8 +317,9 @@ html_balance <- kable(table_balance_formatted,
                       align     = c("l", "r", "r", "r", "r", "r", "r", "r", "r"),
                       caption   = "Summary Statistics of Individuals (Age 0-40 at Conflict Start)") %>%
   kable_styling(
-    bootstrap_options = c("striped", "hover", "condensed", "bordered"),
+    bootstrap_options = c("hover", "condensed", "bordered"),
     full_width        = FALSE,
+    position          = "center",
     fixed_thead       = TRUE,
     font_size         = 13,
     html_font         = "Arial"
@@ -331,6 +332,7 @@ html_balance <- kable(table_balance_formatted,
   row_spec(0, background = "#2c3e50", color = "white", bold = TRUE) %>%
   row_spec(panel_rows, background = "#f0f4f8", bold = TRUE, italic = TRUE) %>%
   column_spec(1, width = "20em") %>%
+  column_spec(2:9, width = "6em") %>%
   footnote(
     general = paste(
       "Treatment = aged 0-17 at conflict start (1996).",
