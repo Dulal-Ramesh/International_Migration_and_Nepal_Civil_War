@@ -25,7 +25,7 @@ $$
 $$
 
 *Conflict<sub>d1</sub>* is the intensity based on month of war. It is the sum of 1 or 0 in each 131 months. *1(casualty<sub>dm</sub>)* takes value 1 if casualty in a district in a month is greater than 0 else *1(casualty<sub>dm</sub>)* takes value 0. The conflict intensity based on this index has the following distribution:
-![Conflict Intensity based on Months of War](figures/month_of_war_intensity.png)
+![Conflict Intensity based on Months of War](/Paper/Figures/month_of_war_intensity_1.png)
 
 ### Conflict Intensity Based on the Number of Casualties
 
@@ -40,7 +40,7 @@ $$
 $$
 
 *Conflict<sub>d2</sub>* is the second measure of intensity based on the number of casualties. It is the sum of casualty number over the conflict period in each district. The intensity of conflict based on this index has the following distribution:
-![Conflict Intensity based on Number of Casualties](figures/number_of_any_casualty.png)
+![Conflict Intensity based on Number of Casualties](/Paper/Figures/month_of_war_intensity_3.png)
 
 ## Empirical Strategy
 
