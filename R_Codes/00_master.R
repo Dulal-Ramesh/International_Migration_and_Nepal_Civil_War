@@ -50,6 +50,7 @@ if (user == "rameshdulal") {
 modified_data <- file.path(dropbox, "Nepal Civil Conflict/Data/Modified_Data")
 r_scripts     <- file.path(github,  "R_Codes")
 figures       <- file.path(github,  "Paper/Figures")
+nepal_maps <- file.path(dropbox, "Nepal Civil Conflict/Data/Raw_Data/Nepal_maps")
 
 # ── Table output folders by category ─────────────────────────────────────── #
 tables_summary    <- file.path(github, "Paper/Tables/Tables_Summary")
