@@ -2,6 +2,12 @@
 
 This repository is related to the investigation into the impact of civil conflict (Maoist revolution) of 1996-2006 in Nepal on the international migration. We try to investigate whether the increasing labor migration from Nepal was a result of exposure to civil conflict during their childhood.
 
+## Results
+
+In order to view the preliminary tables please use the following link. You can view the summary statistics or regression results from this link.
+
+[Results](https://dulal-ramesh.github.io/International_Migration_and_Nepal_Civil_War/)
+
 ## Conflict Intensity
 
 ### Conflict Intensity Based on the Months of War
