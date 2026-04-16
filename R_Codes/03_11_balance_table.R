@@ -304,3 +304,40 @@ writeLines(
     "- Source: Nepal Labor Force Survey; conflict data from INSEC."),
   file.path(tables_summary, "11.Balance_Table.md")
 )
+
+
+# --- HTML ---
+html_balance <- kable(table_balance_formatted,
+                      format    = "html",
+                      col.names = c("Variable",
+                                    "All Mean", "All (SD)",
+                                    "Treatment Mean", "(SD)",
+                                    "Control Mean",   "(SD)",
+                                    "Diff (T-C)", "(SE)"),
+                      align     = c("l", "r", "r", "r", "r", "r", "r", "r", "r"),
+                      caption   = "Summary Statistics of Individuals (Age 0-40 at Conflict Start)") %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "bordered"),
+    full_width        = FALSE,
+    font_size         = 13
+  ) %>%
+  add_header_above(c(" "       = 1,
+                     "All"     = 2,
+                     "Treatment (Age 0-17)" = 2,
+                     "Control (Age 18-40)"  = 2,
+                     " "       = 2)) %>%
+  row_spec(panel_rows, bold = TRUE, italic = TRUE) %>%
+  footnote(
+    general = paste(
+      "Treatment = aged 0-17 at conflict start (1996).",
+      "Control = aged 18-40 at conflict start (1996).",
+      "Standard deviations in parentheses.",
+      "Standard errors of the difference in parentheses in SE column.",
+      "*** p<0.01, ** p<0.05, * p<0.10.",
+      "Source: Nepal Labor Force Survey; conflict data from INSEC."
+    ),
+    footnote_as_chunk = TRUE
+  )
+
+save_kable(html_balance,
+           file = file.path(tables_summary, "11.Balance_Table.html"))
