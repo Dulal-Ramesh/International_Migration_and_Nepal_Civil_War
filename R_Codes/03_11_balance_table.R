@@ -331,8 +331,10 @@ html_balance <- kable(table_balance_formatted,
                      " "       = 2)) %>%
   row_spec(0, background = "#2c3e50", color = "white", bold = TRUE) %>%
   row_spec(panel_rows, background = "#f0f4f8", bold = TRUE, italic = TRUE) %>%
+  row_spec(1:nrow(table_balance_formatted), color = "#1a1a1a") %>%
   column_spec(1, width = "20em") %>%
   column_spec(2:9, width = "6em") %>%
+  
   footnote(
     general = paste(
       "Treatment = aged 0-17 at conflict start (1996).",
