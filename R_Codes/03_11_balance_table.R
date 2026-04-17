@@ -33,3 +33,30 @@ generate_balance_table(
   caption_label = "Age 0--5 at Conflict Start",
   output_dir    = tables_summary
 )
+
+# ==============================================================================
+# TREATMENT AGE 6-12 ----
+# ==============================================================================
+
+generate_balance_table(
+  data          = nlss_conflict_data,
+  treat_age_min = 6,
+  treat_age_max = 12,
+  file_label    = "11c",
+  caption_label = "Age 6--12 at Conflict Start",
+  output_dir    = tables_summary
+)
+
+
+# ==============================================================================
+# TREATMENT AGE 13-17 ----
+# ==============================================================================
+
+generate_balance_table(
+  data          = nlss_conflict_data,
+  treat_age_min = 13,
+  treat_age_max = 17,
+  file_label    = "11d",
+  caption_label = "Age 13--17 at Conflict Start",
+  output_dir    = tables_summary
+)
