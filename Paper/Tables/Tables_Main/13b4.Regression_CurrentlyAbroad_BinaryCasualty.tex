@@ -1,0 +1,30 @@
+\begin{table}
+\centering
+\begin{talltblr}[         %% tabularray outer open
+caption={Effect of Childhood Conflict Exposure on CurrentlyAbroad — High Conflict (Casualties, Q3) (LPM)},
+note{}={* p \num{< 0.1}, ** p \num{< 0.05}, *** p \num{< 0.01}},
+note{ }={OLS estimates (LPM). Outcome variable is binary (0/1). Conflict intensity measured by: High Conflict (Casualties, Q3). Treatment = childhood exposed to conflict (aged 0--17 at conflict start in 1996). Column (2) adds sex and quadratic age. Column (3) adds education dummies. Column (4) adds ethnicity and occupation dummies. Column (5) adds district and birth year fixed effects. Standard errors clustered at the district level in parentheses. *** p$<$0.01, ** p$<$0.05, * p$<$0.10.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]Q[]},
+hline{2}={1-6}{solid, black, 0.05em},
+hline{8}={1-6}{solid, black, 0.05em},
+hline{1}={1-6}{solid, black, 0.08em},
+hline{13}={1-6}{solid, black, 0.08em},
+column{2-6}={}{halign=c},
+column{1}={}{halign=l},
+}                     %% tabularray inner close
+& (1) Basic & (2) +Demo & (3) +Edu & (4) +Ethnicity & (5) +FE \\
+Childhood Exposed (=1) & 0.189*** & 0.078** & 0.069** & 0.067** &  \\
+& (0.017) & (0.032) & (0.028) & (0.026) &  \\
+High Conflict (Casualties, Q3) & 0.180*** & 0.169*** & 0.111*** & 0.079** &  \\
+& (0.058) & (0.058) & (0.042) & (0.036) &  \\
+Childhood Exposed × High Conflict (Casualties, Q3) & -0.158*** & -0.152*** & -0.107*** & -0.084*** & -0.083*** \\
+& (0.042) & (0.041) & (0.028) & (0.023) & (0.025) \\
+N & 14967 & 14967 & 14967 & 14967 & 14967 \\
+R-squared & 0.019 & 0.091 & 0.138 & 0.221 & 0.253 \\
+Controls & No & Yes & Yes & Yes & Yes \\
+District FE & No & No & No & No & Yes \\
+Birth Year FE & No & No & No & No & Yes \\
+\end{talltblr}
+\end{table}
