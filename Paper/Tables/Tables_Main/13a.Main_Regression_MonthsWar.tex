@@ -1,0 +1,26 @@
+\begin{table}
+\centering
+\begin{talltblr}[         %% tabularray outer open
+caption={Effect of Childhood Conflict Exposure on Migration — Months of War (LPM)},
+note{}={* p \num{< 0.1}, ** p \num{< 0.05}, *** p \num{< 0.01}},
+note{ }={OLS estimates (LPM). Outcome variables are binary (0/1). Conflict intensity measured by: Months of War. Treatment = childhood exposed to conflict (aged 0--17 at conflict start in 1996). Controls include age, sex, education, ethnicity, and occupation. District and birth year fixed effects included. Standard errors clustered at the district level in parentheses. *** p$<$0.01, ** p$<$0.05, * p$<$0.10.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]},
+hline{2}={1-5}{solid, black, 0.05em},
+hline{4}={1-5}{solid, black, 0.05em},
+hline{1}={1-5}{solid, black, 0.08em},
+hline{9}={1-5}{solid, black, 0.08em},
+column{2-5}={}{halign=c},
+column{1}={}{halign=l},
+}                     %% tabularray inner close
+& International Migration & Currently Abroad & Return Migrant & Internal Migration \\
+Childhood Exposed × Months of War & -0.001* & -0.001* & -0.000 & -0.000 \\
+& (0.001) & (0.001) & (0.000) & (0.001) \\
+N & 14976 & 14967 & 8810 & 14945 \\
+R-squared & 0.252 & 0.253 & 0.088 & 0.133 \\
+Controls & Yes & Yes & Yes & Yes \\
+District FE & Yes & Yes & Yes & Yes \\
+Birth Year FE & Yes & Yes & Yes & Yes \\
+\end{talltblr}
+\end{table}
