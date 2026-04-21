@@ -358,7 +358,7 @@ nlss_conflict_data <- nlss_conflict_data %>%
     occ_elementary   = ifelse(occupation_category == "Elementary/Low Skilled", 1, 0),
     occ_armed        = ifelse(occupation_category == "Armed Forces",           1, 0),
     
-    
+    # ---- EDIT (2026-04): Added two indicators that flag the distinct
     # occupation-missingness categories separately from each other and from
     # "true" system missings. This preserves flexibility in the regression
     # scripts to include or exclude these groups as needed — without these
@@ -379,3 +379,33 @@ nlss_conflict_data <- nlss_conflict_data %>%
     absent_occ_unknown    = ifelse(occupation_types == 0,    1, 0),
     occupation_not_stated = ifelse(occupation_types == 9999, 1, 0)
   )
+
+
+# ==============================================================================
+# SECTION 12: CREATE ANALYSIS SAMPLE ----
+# ==============================================================================
+# ---- EDIT (2026-04): Added a second, cohort-restricted dataset for use in
+# balance tables and regressions. Two datasets are now available downstream:
+#
+#   nlss_conflict_data      — Full cleaned data (~90,109 obs). Used for
+#                             whole-population descriptive statistics
+#                             (Table 1, migration-type summaries, maps).
+#
+#   nlss_analysis_sample    — Cohort-restricted analysis sample (~37k obs).
+#                             Keeps only individuals in Treatment (age 0-17
+#                             at conflict start) or Control (age 18-40 at
+#                             conflict start). This is the sample for the
+#                             balance table, main regressions, and all
+#                             treatment-vs-control comparisons.
+#
+# The filter below is the single definitional line of the analysis sample —
+# referenced in the paper's sample-construction discussion and by the
+# sample-construction table (03_02_sample_construction.R).
+# -----------------------------------------------------------------------------
+
+nlss_analysis_sample <- nlss_conflict_data %>%
+  filter(!is.na(treatment))   # treatment is NA for all Excluded cohorts
+
+cat("\n=== Sample sizes after cleaning ===\n")
+cat("  Full sample (nlss_conflict_data):     ", nrow(nlss_conflict_data),     "\n")
+cat("  Analysis sample (nlss_analysis_sample):", nrow(nlss_analysis_sample), "\n\n")

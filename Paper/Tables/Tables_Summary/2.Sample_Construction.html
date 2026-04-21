@@ -1,0 +1,128 @@
+<table class="table table-striped table-hover table-condensed" style="font-size: 13px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;">
+<caption style="font-size: initial !important;">Sample Construction</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Step </th>
+   <th style="text-align:right;"> N </th>
+   <th style="text-align:right;"> Dropped </th>
+   <th style="text-align:left;width: 35em; padding-left: 1.5em;"> Reason </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;font-weight: bold;background-color: rgba(245, 245, 245, 255) !important;width: 30em; "> Panel A: From raw data to cleaned sample </td>
+   <td style="text-align:right;font-weight: bold;background-color: rgba(245, 245, 245, 255) !important;width: 10em; ">  </td>
+   <td style="text-align:right;font-weight: bold;background-color: rgba(245, 245, 245, 255) !important;width: 10em; ">  </td>
+   <td style="text-align:left;font-weight: bold;background-color: rgba(245, 245, 245, 255) !important;width: 35em; padding-left: 1.5em;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 30em; "> 1. Full NLSS 2017/18 individual roster </td>
+   <td style="text-align:right;width: 10em; "> 90,967 </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:left;width: 35em; padding-left: 1.5em;"> Starting point </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 30em; "> 2. Drop observations missing district code </td>
+   <td style="text-align:right;width: 10em; "> 90,109 </td>
+   <td style="text-align:right;width: 10em; "> 858 </td>
+   <td style="text-align:left;width: 35em; padding-left: 1.5em;"> District required to merge INSEC conflict data </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 30em; "> 3. Cleaned full sample </td>
+   <td style="text-align:right;width: 10em; "> 90,109 </td>
+   <td style="text-align:right;width: 10em; "> 0 </td>
+   <td style="text-align:left;width: 35em; padding-left: 1.5em;"> After variable construction (demographics, conflict, outcomes) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 30em; ">  </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:left;width: 35em; padding-left: 1.5em;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;background-color: rgba(245, 245, 245, 255) !important;width: 30em; "> Panel B: Cohort restriction (defining the analysis sample) </td>
+   <td style="text-align:right;font-weight: bold;background-color: rgba(245, 245, 245, 255) !important;width: 10em; ">  </td>
+   <td style="text-align:right;font-weight: bold;background-color: rgba(245, 245, 245, 255) !important;width: 10em; ">  </td>
+   <td style="text-align:left;font-weight: bold;background-color: rgba(245, 245, 245, 255) !important;width: 35em; padding-left: 1.5em;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 30em; "> 4a. Exclude: too young in 2017 (age &lt; 18) </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:right;width: 10em; "> 32,390 </td>
+   <td style="text-align:left;width: 35em; padding-left: 1.5em;"> Not yet working-age adults </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 30em; "> 4b. Exclude: too old in 2017 (age &gt; 65) </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:right;width: 10em; "> 4,467 </td>
+   <td style="text-align:left;width: 35em; padding-left: 1.5em;"> Retirement-age; labor market decisions non-comparable </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 30em; "> 4c. Exclude: too young during conflict (age &lt; 6 at conflict end) </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:right;width: 10em; "> 0 </td>
+   <td style="text-align:left;width: 35em; padding-left: 1.5em;"> Insufficient exposure window during formative years </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 30em; "> 4d. Exclude: too old at conflict start (age 41+ in 1996) </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:right;width: 10em; "> 1,958 </td>
+   <td style="text-align:left;width: 35em; padding-left: 1.5em;"> Already past career-formation stage when conflict began </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 30em; "> 4e. Exclude: overlap age cohort </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:right;width: 10em; "> 7,889 </td>
+   <td style="text-align:left;width: 35em; padding-left: 1.5em;"> Age 18 at conflict start and 41-46 in 2017; ambiguous exposure </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 30em; "> 4f. Other exclusions </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:right;width: 10em; "> 6,231 </td>
+   <td style="text-align:left;width: 35em; padding-left: 1.5em;"> Age combinations outside treatment/control definitions </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 30em; ">  </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:left;width: 35em; padding-left: 1.5em;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;background-color: rgba(245, 245, 245, 255) !important;width: 30em; "> Panel C: Main estimation sample </td>
+   <td style="text-align:right;font-weight: bold;background-color: rgba(245, 245, 245, 255) !important;width: 10em; ">  </td>
+   <td style="text-align:right;font-weight: bold;background-color: rgba(245, 245, 245, 255) !important;width: 10em; ">  </td>
+   <td style="text-align:left;font-weight: bold;background-color: rgba(245, 245, 245, 255) !important;width: 35em; padding-left: 1.5em;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 30em; "> 5. Treatment cohort (age 0-17 at conflict start, 18-45 in 2017) </td>
+   <td style="text-align:right;width: 10em; "> 27,444 </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:left;width: 35em; padding-left: 1.5em;"> Exposed to conflict during childhood/adolescence </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 30em; "> 6. Control cohort (age 18-40 at conflict start, 47-65 in 2017) </td>
+   <td style="text-align:right;width: 10em; "> 9,730 </td>
+   <td style="text-align:right;width: 10em; ">  </td>
+   <td style="text-align:left;width: 35em; padding-left: 1.5em;"> Fully formed adults when conflict began </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;background-color: rgba(255, 242, 204, 255) !important;width: 30em; "> 7. MAIN ESTIMATION SAMPLE (Treatment + Control) </td>
+   <td style="text-align:right;font-weight: bold;background-color: rgba(255, 242, 204, 255) !important;width: 10em; "> 37,174 </td>
+   <td style="text-align:right;font-weight: bold;background-color: rgba(255, 242, 204, 255) !important;width: 10em; "> 52,935 </td>
+   <td style="text-align:left;font-weight: bold;background-color: rgba(255, 242, 204, 255) !important;width: 35em; padding-left: 1.5em;"> Used in balance table and all main regressions </td>
+  </tr>
+</tbody>
+<tfoot>
+<tr><td style="padding: 0; " colspan="100%"><span style="font-style: italic;">Notes:</span></td></tr>
+<tr><td style="padding: 0; " colspan="100%">
+<sup></sup> Starting sample: Nepal Labour Force Survey 2017/18 full individual roster (90,967 observations).</td></tr>
+<tr><td style="padding: 0; " colspan="100%">
+<sup></sup> Conflict exposure data from INSEC covering 1996-2006. District information required to merge conflict and survey data.</td></tr>
+<tr><td style="padding: 0; " colspan="100%">
+<sup></sup> Cohort definitions are based on age at conflict onset (1996): treatment = age 0-17, control = age 18-40. Current-age windows in 2017 (18-45 for treatment; 47-65 for control) ensure both cohorts are working-age adults at survey.</td></tr>
+<tr><td style="padding: 0; " colspan="100%">
+<sup></sup> Regressions that additionally control for education or occupation will have slightly smaller samples due to listwise deletion of missing covariates. The final analysis sample of 37,174 refers to the main (no additional controls) specification.</td></tr>
+<tr><td style="padding: 0; " colspan="100%">
+<sup></sup> Source: Nepal Labour Force Survey 2017/18; INSEC conflict database.</td></tr>
+</tfoot>
+</table>
