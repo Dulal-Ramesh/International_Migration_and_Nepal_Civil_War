@@ -88,7 +88,7 @@ compute_group_stats <- function(data_subset) {
       Age_SD            = round(sd(age,                     na.rm = TRUE), 2),
       Age_Conflict_Mean = round(mean(age_at_conflict_start, na.rm = TRUE), 2),
       Age_Conflict_SD   = round(sd(age_at_conflict_start,   na.rm = TRUE), 2),
-      Male_Pct          = round(mean(sex == 1,              na.rm = TRUE) * 100, 2),
+      Male_Pct          = round(mean(male,                  na.rm = TRUE) * 100, 2),
       No_Edu_Pct        = round(mean(education_category == "No Education",     na.rm = TRUE) * 100, 2),
       Primary_Pct       = round(mean(education_category == "Primary (1-5)",    na.rm = TRUE) * 100, 2),
       Secondary_Pct     = round(mean(education_category == "Secondary (6-12)", na.rm = TRUE) * 100, 2),
@@ -117,17 +117,19 @@ g <- function(stats_df, col) stats_df[[col]]
 # SECTION 5: CORRECTING THE LATEX OUTPUT-----
 # ==============================================================================
 
-# Sanitize strings for LaTeX output
 sanitize_latex <- function(x) {
-  x %>%
-    str_replace_all("&",  "\\\\&") %>%   # & → \&
-    str_replace_all("%",  "\\\\%")        # % → \%
+  x <- gsub("&", "\\&", x, fixed = TRUE)   # & → \&
+  x <- gsub("%", "\\%", x, fixed = TRUE)   # % → \%
+  x <- gsub("$", "\\$", x, fixed = TRUE)   # $ → \$
+  x <- gsub("#", "\\#", x, fixed = TRUE)   # # → \#
+  x <- gsub("_", "\\_", x, fixed = TRUE)   # _ → \_
+  x
 }
 
 
 
 # ==============================================================================
-# SECTION 6: BUILDING STANDART COVARIATE SUMMARY TABLE-----
+# SECTION 6: BUILDING STANDARD COVARIATE SUMMARY TABLE-----
 # ==============================================================================
 
 # Format mean (SD) — latex = TRUE puts SD on new line using \makecell
@@ -189,9 +191,9 @@ build_covariate_table <- function(groups, latex = FALSE) {
       as.character(val("N")),
       "",
       "",
-      format_mean_sd(val("Age_Mean"),          val("Age_SD"),          latex = latex),  # ← passed here
+      format_mean_sd(val("Age_Mean"),          val("Age_SD"),          latex = latex),
       "",
-      format_mean_sd(val("Age_Conflict_Mean"), val("Age_Conflict_SD"), latex = latex),  # ← and here
+      format_mean_sd(val("Age_Conflict_Mean"), val("Age_Conflict_SD"), latex = latex),
       "",
       as.character(val("Male_Pct")),
       "",
@@ -232,23 +234,20 @@ build_covariate_table <- function(groups, latex = FALSE) {
 # SECTION 7: BUILDING ttest BALANCE TABLE-----
 # ==============================================================================
 
-# Welch's t-test: Treatment minus Control with stars and p-value
-compute_ttest_diff <- function(treat_df, ctrl_df, var,
-                               is_continuous = FALSE,
-                               latex         = FALSE) {
-  
+# Core t-test helper: returns raw components (diff, se, stars, pval) as a list.
+# Returns NULL if either group has fewer than 2 non-missing observations.
+compute_ttest_stats <- function(treat_df, ctrl_df, var, is_continuous = FALSE) {
   t_vals <- treat_df[[var]][!is.na(treat_df[[var]])]
   c_vals <- ctrl_df[[var]][!is.na(ctrl_df[[var]])]
   
-  if (length(t_vals) < 2 | length(c_vals) < 2) return("")
+  if (length(t_vals) < 2 || length(c_vals) < 2) return(NULL)
   
   test <- t.test(t_vals, c_vals, var.equal = FALSE)
   
-  diff <- if (is_continuous) {
-    round(mean(t_vals) - mean(c_vals), 2)
-  } else {
-    round((mean(t_vals) - mean(c_vals)) * 100, 2)
-  }
+  scale <- if (is_continuous) 1 else 100
+  diff  <- round((mean(t_vals) - mean(c_vals)) * scale, 2)
+  se    <- round(sqrt(var(t_vals) / length(t_vals) +
+                        var(c_vals) / length(c_vals)) * scale, 2)
   
   stars <- case_when(
     test$p.value < 0.01 ~ "***",
@@ -257,18 +256,39 @@ compute_ttest_diff <- function(treat_df, ctrl_df, var,
     TRUE                ~ ""
   )
   
-  pval <- paste0("(p=", formatC(test$p.value, format = "f", digits = 3), ")")
+  list(diff = diff, se = se, stars = stars, pval = test$p.value)
+}
+
+
+format_ttest_diff <- function(stats, include_pval = FALSE, latex = FALSE) {
+  if (is.null(stats)) return("")
+  diff_str <- paste0(stats$diff, stats$stars)
   
-  # LaTeX: stars on estimate, p-value on new line via \makecell----
+  if (!include_pval) return(diff_str)
+  
+  pval_str <- paste0("(p=", formatC(stats$pval, format = "f", digits = 3), ")")
   if (latex) {
-    paste0("\\makecell[c]{", diff, stars, " \\\\ ", pval, "}")
+    paste0("\\makecell[c]{", diff_str, " \\\\ ", pval_str, "}")
   } else {
-    paste0(diff, stars, " ", pval)
+    paste0(diff_str, " ", pval_str)
   }
 }
 
 
-# Build the Diff (T-C) column — row order matches build_covariate_table()
+format_ttest_se <- function(stats) {
+  if (is.null(stats)) return("")
+  paste0("(", stats$se, ")")
+}
+
+
+compute_ttest_diff <- function(treat_df, ctrl_df, var,
+                               is_continuous = FALSE,
+                               latex         = FALSE) {
+  stats <- compute_ttest_stats(treat_df, ctrl_df, var, is_continuous)
+  format_ttest_diff(stats, include_pval = TRUE, latex = latex)
+}
+
+
 build_diff_column <- function(treat_df, ctrl_df, latex = FALSE) {
   d <- function(var, continuous = FALSE) {
     compute_ttest_diff(treat_df, ctrl_df, var,
@@ -277,29 +297,29 @@ build_diff_column <- function(treat_df, ctrl_df, latex = FALSE) {
   }
   
   c(
-    "",   # Sample Size
     "",
-    "",   # Age header
+    "",
+    "",
     d("age",                   continuous = TRUE),
     "",
     d("age_at_conflict_start", continuous = TRUE),
     "",
     d("male"),
     "",
-    "",   # Education header
+    "",
     d("edu_no_education"),
     d("edu_primary"),
     d("edu_secondary"),
     d("edu_tertiary"),
     "",
-    "",   # Ethnicity header
+    "",
     d("eth_hill_high"),
     d("eth_janajati"),
     d("eth_terai"),
     d("eth_dalit"),
     d("eth_muslim"),
     "",
-    "",   # Occupation header
+    "",
     d("occ_agriculture"),
     d("occ_high_skilled"),
     d("occ_service"),
@@ -311,14 +331,63 @@ build_diff_column <- function(treat_df, ctrl_df, latex = FALSE) {
 
 
 # ==============================================================================
-# SECTION 8: BALANCE TABLE GENERATOR ----
+# SECTION 8: SHARED HTML TABLE STYLING ----
+# ==============================================================================
+# 
+# style_html_table(): Wrapper around kable_styling() that applies the project's
+# house style to every HTML table. Use this in every export script so all HTML
+# tables share the same font, sizing, and striping. Change the defaults here
+# once and every HTML table in the project updates.
+#
+# House style:
+#   - Sans-serif body font (Helvetica Neue / Arial family)
+#   - Striped + hover + condensed Bootstrap options
+#   - Centered, not full-width (tables size to content)
+#   - Panel highlight color by convention: #f5f5f5 (light gray)
+#     → Apply via row_spec(panel_rows, background = "#f5f5f5") in caller
+#
+# Usage:
+#   kable(df, format = "html", ...) %>%
+#     style_html_table() %>%
+#     row_spec(panel_rows, background = "#f5f5f5", bold = TRUE) %>%
+#     footnote(...)
+#
+# Declared BEFORE generate_balance_table() so that function can use it.
+# -----------------------------------------------------------------------------
+
+style_html_table <- function(kbl,
+                             font_size   = 13,
+                             full_width  = FALSE,
+                             striped     = TRUE,
+                             fixed_thead = FALSE,
+                             html_font   = "'Helvetica Neue', Helvetica, Arial, sans-serif") {
+  
+  bootstrap_opts <- c("hover", "condensed")
+  if (striped) bootstrap_opts <- c("striped", bootstrap_opts)
+  
+  kbl %>%
+    kable_styling(bootstrap_options = bootstrap_opts,
+                  full_width        = full_width,
+                  font_size         = font_size,
+                  position          = "center",
+                  fixed_thead       = fixed_thead,
+                  html_font         = html_font)
+}
+
+
+# ==============================================================================
+# SECTION 9: BALANCE TABLE GENERATOR ----
 # ==============================================================================
 
 generate_balance_table <- function(data,
                                    treat_age_min,
                                    treat_age_max,
-                                   ctrl_age_min  = 18,
-                                   ctrl_age_max  = 40,
+                                   ctrl_age_min       = 18,
+                                   ctrl_age_max       = 40,
+                                   treat_curr_age_min = 18,
+                                   treat_curr_age_max = 45,
+                                   ctrl_curr_age_min  = 47,
+                                   ctrl_curr_age_max  = 65,
                                    file_label,
                                    caption_label,
                                    output_dir) {
@@ -327,12 +396,12 @@ generate_balance_table <- function(data,
   treat_df <- data %>%
     filter(age_at_conflict_start >= treat_age_min,
            age_at_conflict_start <= treat_age_max,
-           age >= 18, age <= 45)
+           age >= treat_curr_age_min, age <= treat_curr_age_max)
   
   ctrl_df  <- data %>%
     filter(age_at_conflict_start >= ctrl_age_min,
            age_at_conflict_start <= ctrl_age_max,
-           age >= 47, age <= 65)
+           age >= ctrl_curr_age_min, age <= ctrl_curr_age_max)
   
   all_df   <- bind_rows(treat_df, ctrl_df)
   
@@ -349,26 +418,13 @@ generate_balance_table <- function(data,
   get_sd_pct   <- function(df, var) paste0("(", round(sd(df[[var]], na.rm = TRUE) * 100, 2), ")")
   
   get_diff <- function(var, is_continuous = FALSE) {
-    t_vals <- treat_df[[var]][!is.na(treat_df[[var]])]
-    c_vals <- ctrl_df[[var]][!is.na(ctrl_df[[var]])]
-    if (length(t_vals) < 2 | length(c_vals) < 2) return("")
-    test  <- t.test(t_vals, c_vals, var.equal = FALSE)
-    diff  <- if (is_continuous) round(mean(t_vals) - mean(c_vals), 2) else
-      round((mean(t_vals) - mean(c_vals)) * 100, 2)
-    stars <- case_when(test$p.value < 0.01 ~ "***",
-                       test$p.value < 0.05 ~ "**",
-                       test$p.value < 0.10 ~ "*",
-                       TRUE                ~ "")
-    paste0(diff, stars)
+    stats <- compute_ttest_stats(treat_df, ctrl_df, var, is_continuous)
+    format_ttest_diff(stats, include_pval = FALSE, latex = FALSE)
   }
   
   get_se <- function(var, is_continuous = FALSE) {
-    t_vals <- treat_df[[var]][!is.na(treat_df[[var]])]
-    c_vals <- ctrl_df[[var]][!is.na(ctrl_df[[var]])]
-    if (length(t_vals) < 2 | length(c_vals) < 2) return("")
-    se <- sqrt(var(t_vals) / length(t_vals) + var(c_vals) / length(c_vals))
-    if (!is_continuous) se <- se * 100
-    paste0("(", round(se, 2), ")")
+    stats <- compute_ttest_stats(treat_df, ctrl_df, var, is_continuous)
+    format_ttest_se(stats)
   }
   
   # --- Row builders ---
@@ -497,23 +553,27 @@ generate_balance_table <- function(data,
   
   
   # --- HTML ---
+  # ---- EDIT (2026-04): Refactored to use shared style_html_table() helper.
+  # Previously used inline kable_styling(..., html_font = "Arial", ...) with a
+  # dark #2c3e50 header, which differed from other HTML tables in the project.
+  # Now uses the shared house style for visual consistency across all tables.
+  # Balance-table-specific touches (column widths, add_header_above) stay here.
   html_out <- kable(tbl_plain, format="html", col.names=col_names, align=col_align,
                     caption=paste0("Summary Statistics of Individuals (", caption_label, ")")) %>%
-    kable_styling(bootstrap_options=c("hover","condensed","bordered"),
-                  full_width=FALSE, position="center", fixed_thead=TRUE,
-                  font_size=13, html_font="Arial") %>%
+    style_html_table(font_size = 13, fixed_thead = TRUE) %>%
     add_header_above(c(" "=1, "All"=2,
                        setNames(2, treat_label_html),
                        setNames(2, ctrl_label_html), " "=2)) %>%
-    row_spec(0, background="#2c3e50", color="white", bold=TRUE) %>%
-    row_spec(panel_rows, background="#f0f4f8", bold=TRUE, italic=TRUE) %>%
-    row_spec(1:nrow(tbl_plain), color="#1a1a1a") %>%
-    column_spec(1, width="20em") %>%
-    column_spec(2:9, width="6em") %>%
-    footnote(general=footnote_text_html, footnote_as_chunk=TRUE)
+    row_spec(0,          bold = TRUE) %>%
+    row_spec(panel_rows, background = "#f5f5f5", bold = TRUE) %>%
+    column_spec(1,   width = "20em") %>%
+    column_spec(2:9, width = "6em") %>%
+    footnote(general = footnote_text_html, footnote_as_chunk = TRUE)
   
-  save_kable(html_out,
-             file=file.path(output_dir, paste0(file_label, ".Balance_Table.html")))
+  # ---- EDIT (2026-04): Replaced save_kable() with writeLines() — save_kable
+  # for HTML can still invoke webshot2 for rendering checks, which we don't need.
+  writeLines(as.character(html_out),
+             file.path(output_dir, paste0(file_label, ".Balance_Table.html")))
   
-  cat("=== Exported:", file_label, "(.tex / .md / .html) ===\n")
+  cat("=== Exported:", file_label, "(.tex / .html) ===\n")
 }

@@ -31,6 +31,7 @@ if (user == "rameshdulal") {
   github  <- "/Users/rameshdulal/Documents/Web Portfolio/Dissertation/International_Migration_and_Nepal_Civil_War"
   
 } else if (user == "paghosh") {            # ← replace with your username. In your console type Sys.getenv("USER") to find your username
+                                           # <- if you are using windows, type Sys.info()["user"]
   dropbox <- "/Users/paghosh/Dropbox"      # ← replace with your actual Dropbox path
   github  <- "/Users/paghosh/..."          # ← replace with your actual GitHub repo path
   
@@ -51,6 +52,7 @@ modified_data <- file.path(dropbox, "Nepal Civil Conflict/Data/Modified_Data")
 r_scripts     <- file.path(github,  "R_Codes")
 figures       <- file.path(github,  "Paper/Figures")
 nepal_maps <- file.path(dropbox, "Nepal Civil Conflict/Data/Raw_Data/Nepal_maps")
+logs        <- file.path(dropbox, "Nepal Civil Conflict/Logs")
 
 # ── Table output folders by category ─────────────────────────────────────── #
 tables_summary    <- file.path(github, "Paper/Tables/Tables_Summary")
@@ -65,7 +67,7 @@ tables_mechanism  <- file.path(github, "Paper/Tables/Tables_Mechanisms")
 # ==============================================================================
 
 today    <- format(Sys.Date(), "%m-%d-%Y")
-log_file <- file.path(r_scripts, paste0("log_master_R_", today, ".txt"))
+log_file <- file.path(logs, paste0("log_master_", user, "_", today, ".txt"))
 con      <- file(log_file, open = "wt")
 sink(con, append = FALSE, split = TRUE)   # prints to both console and log
 cat("00_master.R started:", format(Sys.time()), "\n\n")

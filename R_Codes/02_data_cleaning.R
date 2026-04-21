@@ -204,13 +204,17 @@ nlss_conflict_data <- nlss_conflict_data %>%
       TRUE                     ~ NA_real_
     ),
     occupation_category = case_when(
+      # ---- EDIT (2026-04): Moved the 9999 sentinel-code check to the TOP of the
+      # case_when. Previously it sat at the bottom, but since floor(9999/1000) = 9,
+      # the `nsco_major == 9` clause below was firing first and mislabeling 9999
+      # respondents as "Elementary/Low Skilled". Now they correctly become NA.
+      occupation_types == 9999                ~ NA_character_,
       occupation_types %in% c(110, 210, 310) ~ "Armed Forces",
       nsco_major %in% c(1, 2, 3)             ~ "High Skilled",
       nsco_major %in% c(4, 5)                ~ "Service & Clerical",
       nsco_major == 6                         ~ "Agriculture",
       nsco_major %in% c(7, 8)                ~ "Craft & Manufacturing",
       nsco_major == 9                         ~ "Elementary/Low Skilled",
-      occupation_types == 9999                ~ NA_character_,
       TRUE                                    ~ NA_character_
     )
   )
@@ -352,5 +356,26 @@ nlss_conflict_data <- nlss_conflict_data %>%
     occ_service      = ifelse(occupation_category == "Service & Clerical",     1, 0),
     occ_craft        = ifelse(occupation_category == "Craft & Manufacturing",  1, 0),
     occ_elementary   = ifelse(occupation_category == "Elementary/Low Skilled", 1, 0),
-    occ_armed        = ifelse(occupation_category == "Armed Forces",           1, 0)
+    occ_armed        = ifelse(occupation_category == "Armed Forces",           1, 0),
+    
+    
+    # occupation-missingness categories separately from each other and from
+    # "true" system missings. This preserves flexibility in the regression
+    # scripts to include or exclude these groups as needed — without these
+    # indicators, listwise deletion would silently drop 1,726 absentees
+    # (mostly international migrants) from any regression that includes
+    # occupation_category as a control.
+    #
+    # absent_occ_unknown:    occupation_types == 0   (N = 1,726)
+    #                        Absent household member; occupation not reported
+    #                        by the household respondent. 1,167 of these are
+    #                        international migrants — exactly the outcome
+    #                        of interest.
+    #
+    # occupation_not_stated: occupation_types == 9999 (N = 2,334)
+    #                        Present respondent; occupation question answered
+    #                        but code is "Not Stated" per NLSS coding.
+    # -----------------------------------------------------------------------
+    absent_occ_unknown    = ifelse(occupation_types == 0,    1, 0),
+    occupation_not_stated = ifelse(occupation_types == 9999, 1, 0)
   )
