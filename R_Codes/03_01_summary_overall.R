@@ -205,3 +205,10 @@ html_table1 <- kable(table1_overall,
 
 writeLines(as.character(html_table1),
            file.path(tables_summary, "1.Overall_Summary.html"))
+
+# Register table for auto-generated tables.js navigation
+register_table(
+  section = "Summary Tables",
+  title   = "Table 1 — Descriptive Statistics",
+  file    = "Tables_Summary/1.Overall_Summary.html"
+)

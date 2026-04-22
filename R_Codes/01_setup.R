@@ -577,3 +577,35 @@ generate_balance_table <- function(data,
   
   cat("=== Exported:", file_label, "(.tex / .html) ===\n")
 }
+
+
+# ==============================================================================
+# SECTION 10: TABLES REGISTRY (for auto-generating tables.js)----
+# ==============================================================================
+# Populated by register_table() calls inside each table script, right after
+# writeLines(...) for the HTML output. At the end of 00_master.R, we write
+# tables.js using this registry. This drives the index.html and viewer.html
+# navigation on the GitHub Pages site.
+# ------------------------------------------------------------------------------
+
+tables_registry <- data.frame(
+  section = character(),
+  title   = character(),
+  file    = character(),   # path relative to Paper/Tables/
+  stringsAsFactors = FALSE
+)
+
+# Helper: call RIGHT AFTER writeLines() for each HTML table.
+# Example:
+#   register_table(
+#     section = "Summary Tables",
+#     title   = "Table 1 — Descriptive Statistics",
+#     file    = "Tables_Summary/1.Overall_Summary.html"
+#   )
+register_table <- function(section, title, file) {
+  tables_registry <<- rbind(
+    tables_registry,
+    data.frame(section = section, title = title, file = file,
+               stringsAsFactors = FALSE)
+  )
+}
