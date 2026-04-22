@@ -7,53 +7,40 @@
 
   <style>
     body { font-family: 'Roboto', sans-serif; max-width: 800px; margin: 40px auto; }
-    h2   { font-family: 'Lora', serif; color: #2c3e50; border-bottom: 1px solid #ccc; padding-bottom: 6px; }
+    h2   { font-family: 'Lora', serif; color: #2c3e50; border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-top: 30px; }
+    h3   { font-family: 'Lora', serif; margin-top: 20px; }
     a    { display: block; margin: 6px 0; font-size: 15px; }
   </style>
 </head>
 <body>
   <h1>Nepal Civil Conflict & International Migration</h1>
 
-  <h2>Summary Tables</h2>
-  <p><a href="viewer.html?i=0"  target="_blank">Table 1 — Descriptive Statistics</a></p>
-  <p><a href="viewer.html?i=1"  target="_blank">Table 2 — Sample Construction</a></p>
+  <!-- Links below are built automatically from tables.js -->
+  <div id="linksContainer"></div>
 
-  <h2>Balance Tables</h2>
-  <p><a href="viewer.html?i=2"  target="_blank">Table 11a — Balance Table (Treatment Group: 0-17)</a></p>
-  <p><a href="viewer.html?i=3"  target="_blank">Table 11b — Balance Table (Treatment Group: 0-5)</a></p>
-  <p><a href="viewer.html?i=4"  target="_blank">Table 11c — Balance Table (Treatment Group: 6-12)</a></p>
-  <p><a href="viewer.html?i=5"  target="_blank">Table 11d — Balance Table (Treatment Group: 13-17)</a></p>
+  <script src="tables.js"></script>
+  <script>
+    (function () {
+      const container = document.getElementById("linksContainer");
+      let lastSection = null;
 
-  <h2>Regression Tables</h2>
-  <p><a href="viewer.html?i=6"  target="_blank">Table 13a — Main Result (Intensity: Month of War)</a></p>
-  <p><a href="viewer.html?i=7"  target="_blank">Table 13b — Main Result (Intensity: Number of Casualties)</a></p>
-  <p><a href="viewer.html?i=8"  target="_blank">Table 13c — Main Result (Binary Intensity: Based on Months of War)</a></p>
-  <p><a href="viewer.html?i=9"  target="_blank">Table 13d — Main Result (Binary Intensity: Based on Casualty Number)</a></p>
+      TABLES.forEach(function (t, i) {
+        if (t.section !== lastSection) {
+          const h = document.createElement("h2");
+          h.textContent = t.section;
+          container.appendChild(h);
+          lastSection = t.section;
+        }
 
-  <h2>Progressive Regression Tables</h2>
-
-  <h3>Outcome: International Migrant</h3>
-  <p><a href="viewer.html?i=10" target="_blank">Table 13a1 — Outcome: International Migrant (Intensity: Month of War)</a></p>
-  <p><a href="viewer.html?i=11" target="_blank">Table 13a2 — Outcome: International Migrant (Intensity: Number of Casualties)</a></p>
-  <p><a href="viewer.html?i=12" target="_blank">Table 13a3 — Outcome: International Migrant (Binary Intensity: Based on Months of War)</a></p>
-  <p><a href="viewer.html?i=13" target="_blank">Table 13a4 — Outcome: International Migrant (Binary Intensity: Based on Casualty Number)</a></p>
-
-  <h3>Outcome: Currently Abroad</h3>
-  <p><a href="viewer.html?i=14" target="_blank">Table 13b1 — Outcome: Currently Abroad (Intensity: Month of War)</a></p>
-  <p><a href="viewer.html?i=15" target="_blank">Table 13b2 — Outcome: Currently Abroad (Intensity: Number of Casualties)</a></p>
-  <p><a href="viewer.html?i=16" target="_blank">Table 13b3 — Outcome: Currently Abroad (Binary Intensity: Based on Months of War)</a></p>
-  <p><a href="viewer.html?i=17" target="_blank">Table 13b4 — Outcome: Currently Abroad (Binary Intensity: Based on Casualty Number)</a></p>
-
-  <h3>Outcome: Return Migrant</h3>
-  <p><a href="viewer.html?i=18" target="_blank">Table 13c1 — Outcome: Return Migrant (Intensity: Month of War)</a></p>
-  <p><a href="viewer.html?i=19" target="_blank">Table 13c2 — Outcome: Return Migrant (Intensity: Number of Casualties)</a></p>
-  <p><a href="viewer.html?i=20" target="_blank">Table 13c3 — Outcome: Return Migrant (Binary Intensity: Based on Months of War)</a></p>
-  <p><a href="viewer.html?i=21" target="_blank">Table 13c4 — Outcome: Return Migrant (Binary Intensity: Based on Casualty Number)</a></p>
-
-  <h3>Outcome: Internal Migrant</h3>
-  <p><a href="viewer.html?i=22" target="_blank">Table 13d1 — Outcome: Internal Migrant (Intensity: Month of War)</a></p>
-  <p><a href="viewer.html?i=23" target="_blank">Table 13d2 — Outcome: Internal Migrant (Intensity: Number of Casualties)</a></p>
-  <p><a href="viewer.html?i=24" target="_blank">Table 13d3 — Outcome: Internal Migrant (Binary Intensity: Based on Months of War)</a></p>
-  <p><a href="viewer.html?i=25" target="_blank">Table 13d4 — Outcome: Internal Migrant (Binary Intensity: Based on Casualty Number)</a></p>
+        const p = document.createElement("p");
+        const a = document.createElement("a");
+        a.href = "viewer.html?i=" + i;
+        //a.target = "_blank";
+        a.textContent = t.title;
+        p.appendChild(a);
+        container.appendChild(p);
+      });
+    })();
+  </script>
 </body>
 </html>
