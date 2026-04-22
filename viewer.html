@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Table Viewer — Nepal Civil Conflict & Migration</title>
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif; }
+
+    .nav-bar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: #2c3e50;
+      color: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      z-index: 1000;
+    }
+
+    .nav-bar button,
+    .nav-bar a {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .nav-bar button:hover:not(:disabled),
+    .nav-bar a:hover { background: #2980b9; }
+
+    .nav-bar button:disabled {
+      background: #7f8c8d;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .title-box {
+      flex: 1;
+      text-align: center;
+      font-weight: bold;
+      font-size: 15px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0 8px;
+    }
+
+    .counter { font-size: 13px; opacity: 0.85; }
+
+    iframe {
+      width: 100%;
+      height: calc(100vh - 52px);
+      border: none;
+      display: block;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="nav-bar">
+    <button id="prevBtn" onclick="go(-1)">← Previous</button>
+    <div class="title-box">
+      <span id="title">Loading…</span>
+      <span class="counter" id="counter"></span>
+    </div>
+    <button id="nextBtn" onclick="go(1)">Next →</button>
+    <a href="index.html">🏠 Index</a>
+  </div>
+
+  <iframe id="frame" title="Table content"></iframe>
+
+  <script>
+    // ----- List of all tables in the order you want to navigate -----
+    // Base URL so we don't repeat ourselves
+    const BASE = "https://dulal-ramesh.github.io/International_Migration_and_Nepal_Civil_War/Paper/Tables/";
+
+    const tables = [
+      // Summary Tables
+      { title: "Table 1 — Descriptive Statistics",
+        url: BASE + "Tables_Summary/1.Overall_Summary.html" },
+      { title: "Table 2 — Sample Construction",
+        url: BASE + "Tables_Summary/2.Sample_Construction.html" },
+
+      // Balance Tables
+      { title: "Table 11a — Balance Table (Treatment Group: 0-17)",
+        url: BASE + "Tables_Summary/11a.Balance_Table.html" },
+      { title: "Table 11b — Balance Table (Treatment Group: 0-5)",
+        url: BASE + "Tables_Summary/11b.Balance_Table.html" },
+      { title: "Table 11c — Balance Table (Treatment Group: 6-12)",
+        url: BASE + "Tables_Summary/11c.Balance_Table.html" },
+      { title: "Table 11d — Balance Table (Treatment Group: 13-17)",
+        url: BASE + "Tables_Summary/11d.Balance_Table.html" },
+
+      // Main Regression Tables
+      { title: "Table 13a — Main Result (Intensity: Month of War)",
+        url: BASE + "Tables_Main/13a.Main_Regression_MonthsWar.html" },
+      { title: "Table 13b — Main Result (Intensity: Number of Casualties)",
+        url: BASE + "Tables_Main/13b.Main_Regression_Casualties.html" },
+      { title: "Table 13c — Main Result (Binary Intensity: Months of War)",
+        url: BASE + "Tables_Main/13c.Main_Regression_BinaryWar.html" },
+      { title: "Table 13d — Main Result (Binary Intensity: Casualty Number)",
+        url: BASE + "Tables_Main/13d.Main_Regression_BinaryCasualty.html" },
+
+      // Outcome: International Migrant
+      { title: "Table 13a1 — International Migrant (Month of War)",
+        url: BASE + "Tables_Main/13a1.Regression_IntMigrant_MonthsWar.html" },
+      { title: "Table 13a2 — International Migrant (Casualties)",
+        url: BASE + "Tables_Main/13a2.Regression_IntMigrant_Casualties.html" },
+      { title: "Table 13a3 — International Migrant (Binary: Months of War)",
+        url: BASE + "Tables_Main/13a3.Regression_IntMigrant_BinaryWar.html" },
+      { title: "Table 13a4 — International Migrant (Binary: Casualty Number)",
+        url: BASE + "Tables_Main/13a4.Regression_IntMigrant_BinaryCasualty.html" },
+
+      // Outcome: Currently Abroad
+      { title: "Table 13b1 — Currently Abroad (Month of War)",
+        url: BASE + "Tables_Main/13b1.Regression_CurrentlyAbroad_MonthsWar.html" },
+      { title: "Table 13b2 — Currently Abroad (Casualties)",
+        url: BASE + "Tables_Main/13b2.Regression_CurrentlyAbroad_Casualties.html" },
+      { title: "Table 13b3 — Currently Abroad (Binary: Months of War)",
+        url: BASE + "Tables_Main/13b3.Regression_CurrentlyAbroad_BinaryWar.html" },
+      { title: "Table 13b4 — Currently Abroad (Binary: Casualty Number)",
+        url: BASE + "Tables_Main/13b4.Regression_CurrentlyAbroad_BinaryCasualty.html" },
+
+      // Outcome: Return Migrant
+      { title: "Table 13c1 — Return Migrant (Month of War)",
+        url: BASE + "Tables_Main/13c1.Regression_ReturnMigrant_MonthsWar.html" },
+      { title: "Table 13c2 — Return Migrant (Casualties)",
+        url: BASE + "Tables_Main/13c2.Regression_ReturnMigrant_Casualties.html" },
+      { title: "Table 13c3 — Return Migrant (Binary: Months of War)",
+        url: BASE + "Tables_Main/13c3.Regression_ReturnMigrant_BinaryWar.html" },
+      { title: "Table 13c4 — Return Migrant (Binary: Casualty Number)",
+        url: BASE + "Tables_Main/13c4.Regression_ReturnMigrant_BinaryCasualty.html" },
+
+      // Outcome: Internal Migrant
+      { title: "Table 13d1 — Internal Migrant (Month of War)",
+        url: BASE + "Tables_Main/13d1.Regression_InternalMigrant_MonthsWar.html" },
+      { title: "Table 13d2 — Internal Migrant (Casualties)",
+        url: BASE + "Tables_Main/13d2.Regression_InternalMigrant_Casualties.html" },
+      { title: "Table 13d3 — Internal Migrant (Binary: Months of War)",
+        url: BASE + "Tables_Main/13d3.Regression_InternalMigrant_BinaryWar.html" },
+      { title: "Table 13d4 — Internal Migrant (Binary: Casualty Number)",
+        url: BASE + "Tables_Main/13d4.Regression_InternalMigrant_BinaryCasualty.html" }
+    ];
+
+    // ----- Navigation logic -----
+    function getIndex() {
+      const params = new URLSearchParams(window.location.search);
+      const i = parseInt(params.get("i"), 10);
+      if (isNaN(i)) return 0;
+      // Clamp between 0 and last index
+      return Math.max(0, Math.min(i, tables.length - 1));
+    }
+
+    function render() {
+      const i = getIndex();
+      const t = tables[i];
+      document.title = t.title;
+      document.getElementById("title").textContent = t.title;
+      document.getElementById("counter").textContent = " (" + (i + 1) + " / " + tables.length + ")";
+      document.getElementById("frame").src = t.url;
+      document.getElementById("prevBtn").disabled = (i === 0);
+      document.getElementById("nextBtn").disabled = (i === tables.length - 1);
+    }
+
+    function go(delta) {
+      const newIndex = getIndex() + delta;
+      if (newIndex < 0 || newIndex >= tables.length) return;
+      // Update URL and re-render (no full page reload needed)
+      history.pushState(null, "", "?i=" + newIndex);
+      render();
+    }
+
+    // Support keyboard arrows (nice bonus)
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "ArrowLeft")  go(-1);
+      if (e.key === "ArrowRight") go(1);
+    });
+
+    // Support browser Back/Forward buttons
+    window.addEventListener("popstate", render);
+
+    render();
+  </script>
+</body>
+</html>
