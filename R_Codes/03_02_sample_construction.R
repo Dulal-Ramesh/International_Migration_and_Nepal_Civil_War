@@ -217,6 +217,13 @@ html_sample <- kable(sample_construction,
 writeLines(as.character(html_sample),
            file.path(tables_summary, "2.Sample_Construction.html"))
 
+# Register table for auto-generated tables.js navigation
+register_table(
+  section = "Summary Tables",
+  title   = "Table 2 - Sample Construction",
+  file    = "Tables_Summary/2.Sample_Construction.html"
+)
+
 
 # --- Console summary ---
 cat("\n=== Sample construction summary ===\n")

@@ -4,5 +4,6 @@
 const BASE = "https://dulal-ramesh.github.io/International_Migration_and_Nepal_Civil_War/Paper/Tables/";
 
 const TABLES = [
-  { section: "Summary Tables", title: "Table 1 — Descriptive Statistics", url: BASE + "Tables_Summary/1.Overall_Summary.html" }
+  { section: "Summary Tables", title: "Table 1 — Descriptive Statistics", url: BASE + "Tables_Summary/1.Overall_Summary.html" },
+  { section: "Summary Tables", title: "Table 2 - Sample Construction", url: BASE + "Tables_Summary/2.Sample_Construction.html" }
 ];
