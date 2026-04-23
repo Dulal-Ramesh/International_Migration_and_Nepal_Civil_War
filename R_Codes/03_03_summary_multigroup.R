@@ -123,5 +123,10 @@ html_multigroup <- kable(table_multigroup_plain,
 writeLines(as.character(html_multigroup),
            file.path(tables_summary, "3.Multigroup_Summary.html"))
 
-
+# Register table for auto-generated tables.js navigation
+register_table(
+  section = "Summary Tables",
+  title   = "Table 3 — Summary by Migration Type",
+  file    = "Tables_Summary/3.Multigroup_Summary.html"
+)
 cat("\n=== Exported 4.Multigroup_Summary (.tex / .html) ===\n")

@@ -5,5 +5,6 @@ const BASE = "https://dulal-ramesh.github.io/International_Migration_and_Nepal_C
 
 const TABLES = [
   { section: "Summary Tables", title: "Table 1 — Descriptive Statistics", url: BASE + "Tables_Summary/1.Overall_Summary.html" },
-  { section: "Summary Tables", title: "Table 2 - Sample Construction", url: BASE + "Tables_Summary/2.Sample_Construction.html" }
+  { section: "Summary Tables", title: "Table 2 - Sample Construction", url: BASE + "Tables_Summary/2.Sample_Construction.html" },
+  { section: "Summary Tables", title: "Table 3 — Summary by Migration Type", url: BASE + "Tables_Summary/3.Multigroup_Summary.html" }
 ];
