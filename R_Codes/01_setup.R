@@ -804,19 +804,19 @@ generate_conflict_did_table <- function(data,
     paste0("High-Conflict: districts above the 75th percentile of ",
            conflict_label, "; Low-Conflict: at or below (including zeros)."),
     "Standard deviations in parentheses.",
-    paste0("Diff (H-L) reports the coefficient from Y = a + b*HighConflict; ",
+    paste0("Diff (H-L) reports the coefficient $b$ from $Y = a + b \\times \\text{HighConflict}$; ",
            "standard errors in parentheses are clustered at the district level."),
     "*** p$<$0.01, ** p$<$0.05, * p$<$0.10.",
     "Source: Nepal Labor Force Survey; conflict data from INSEC."
   )
   
-  footnote_text_html <- paste(
+  footnote_text_html <- c(
     paste0("Sample restricted to individuals aged ", treat_age_min, "-",
            treat_age_max, " at conflict start (1996)."),
     paste0("High-Conflict: districts above the 75th percentile of ",
            conflict_label, "; Low-Conflict: at or below (including zeros)."),
     "Standard deviations in parentheses.",
-    paste0("Diff (H-L) reports the coefficient from Y = a + b*HighConflict; ",
+    paste0("Diff (H-L) reports the coefficient from Y = a + b \u00D7 HighConflict; ",
            "standard errors in parentheses are clustered at the district level."),
     "*** p<0.01, ** p<0.05, * p<0.10.",
     "Source: Nepal Labor Force Survey; conflict data from INSEC."
@@ -854,7 +854,7 @@ generate_conflict_did_table <- function(data,
     row_spec(panel_rows, background = "#f5f5f5", bold = TRUE) %>%
     column_spec(1,   width = "20em") %>%
     column_spec(2:7, width = "6em") %>%
-    footnote(general = footnote_text_html, footnote_as_chunk = TRUE)
+    footnote(general = footnote_text_html, footnote_as_chunk = FALSE)
   
   writeLines(as.character(html_out),
              file.path(output_dir, paste0(file_label, ".Conflict_DiD_Table.html")))
