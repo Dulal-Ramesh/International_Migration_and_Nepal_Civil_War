@@ -43,6 +43,7 @@ generate_conflict_did_table(
 
 register_table(
   section = "Difference Tables",
+  subsection = "Based on Month of War",
   title   = "Table 4a — High vs Low Conflict (Age 0–17)",
   file    = "Tables_Summary/4a.Conflict_DiD_Table.html"
 )
@@ -66,6 +67,7 @@ generate_conflict_did_table(
 
 register_table(
   section = "Difference Tables",
+  subsection = "Based on Month of War",
   title   = "Table 4b — High vs Low Conflict (Age 0–5)",
   file    = "Tables_Summary/4b.Conflict_DiD_Table.html"
 )
@@ -89,6 +91,7 @@ generate_conflict_did_table(
 
 register_table(
   section = "Difference Tables",
+  subsection = "Based on Month of War",
   title   = "Table 4c — High vs Low Conflict (Age 6–12)",
   file    = "Tables_Summary/4c.Conflict_DiD_Table.html"
 )
@@ -112,6 +115,7 @@ generate_conflict_did_table(
 
 register_table(
   section = "Difference Tables",
+  subsection = "Based on Month of War",
   title   = "Table 4d — High vs Low Conflict (Age 13–17)",
   file    = "Tables_Summary/4d.Conflict_DiD_Table.html"
 )

@@ -874,6 +874,7 @@ generate_conflict_did_table <- function(data,
 
 tables_registry <- data.frame(
   section = character(),
+  subsection = character(),
   title   = character(),
   file    = character(),   # path relative to Paper/Tables/
   stringsAsFactors = FALSE
@@ -886,10 +887,10 @@ tables_registry <- data.frame(
 #     title   = "Table 1 — Descriptive Statistics",
 #     file    = "Tables_Summary/1.Overall_Summary.html"
 #   )
-register_table <- function(section, title, file) {
+register_table <- function(section, title, file, subsection = "") {
   tables_registry <<- rbind(
     tables_registry,
-    data.frame(section = section, title = title, file = file,
+    data.frame(section = section, subsection = subsection, title = title, file = file,
                stringsAsFactors = FALSE)
   )
 }

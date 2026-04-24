@@ -137,8 +137,9 @@ base_url <- "https://dulal-ramesh.github.io/International_Migration_and_Nepal_Ci
 esc <- function(x) gsub('"', '\\\\"', x)
 
 js_entries <- sprintf(
-  '  { section: "%s", title: "%s", url: BASE + "%s" }',
+  '  { section: "%s", subsection: "%s", title: "%s", url: BASE + "%s" }',
   esc(tables_registry$section),
+  esc(tables_registry$subsection),
   esc(tables_registry$title),
   tables_registry$file
 )

@@ -8,12 +8,14 @@
   <style>
     body { font-family: 'Roboto', sans-serif; max-width: 800px; margin: 40px auto; }
     h2   { font-family: 'Lora', serif; color: #2c3e50; border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-top: 30px; }
-    h3   { font-family: 'Lora', serif; margin-top: 20px; }
+    h3   { font-family: 'Lora', serif; color: #4a6278; margin-top: 18px; margin-bottom: 6px; font-size: 17px; font-weight: normal; font-style: italic; }
     a    { display: block; margin: 6px 0; font-size: 15px; }
-    a:visited {color: #1a5490; }
-    a:hover {color: #2980b9; text-decoration: underline; }
+    a:visited { color: #1a5490; }
+    a:hover   { color: #2980b9; text-decoration: underline; }
+    /* Indent links that sit under a subsection */
+    .sub-entry { margin-left: 16px; }
   </style>
-  </head>
+</head>
 <body>
   <h1>Nepal Civil Conflict & International Migration</h1>
 
@@ -24,20 +26,37 @@
   <script>
     (function () {
       const container = document.getElementById("linksContainer");
-      let lastSection = null;
+      let lastSection    = null;
+      let lastSubsection = null;
 
       TABLES.forEach(function (t, i) {
+        // New top-level section → print an <h2> and reset subsection tracker
         if (t.section !== lastSection) {
           const h = document.createElement("h2");
           h.textContent = t.section;
           container.appendChild(h);
-          lastSection = t.section;
+          lastSection    = t.section;
+          lastSubsection = null;
+        }
+
+        // New subsection (non-empty, different from last) → print an <h3>
+        const sub = t.subsection || "";
+        if (sub !== "" && sub !== lastSubsection) {
+          const h3 = document.createElement("h3");
+          h3.textContent = sub;
+          container.appendChild(h3);
+          lastSubsection = sub;
+        } else if (sub === "") {
+          // Reset: entries with no subsection should not inherit the last one
+          lastSubsection = null;
         }
 
         const p = document.createElement("p");
+        // Indent if this entry belongs to a subsection
+        if (sub !== "") p.className = "sub-entry";
+
         const a = document.createElement("a");
         a.href = "viewer.html?i=" + i;
-        //a.target = "_blank";
         a.textContent = t.title;
         p.appendChild(a);
         container.appendChild(p);
