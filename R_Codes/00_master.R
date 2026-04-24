@@ -98,7 +98,9 @@ source(file.path(r_scripts, "03_02_sample_construction.R"))
 source(file.path(r_scripts, "03_03_summary_multigroup.R"))
 
 source(file.path(r_scripts, "03_04_balance_0-17_Age.R"))
-# 
+
+source(file.path(r_scripts, "03_05_balance_0-17_Age_Num.R"))
+
 # 
 # cat("========================================================\n")
 # cat(" STEP 4: Main Regression Analysis\n")
