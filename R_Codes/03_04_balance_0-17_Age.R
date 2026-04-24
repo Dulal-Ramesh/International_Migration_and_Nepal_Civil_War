@@ -1,7 +1,7 @@
 # ==============================================================================
 # Project Title : Nepal Civil Conflict and International Migration
 # Author        : Ramesh Dulal
-# Description   : Summary Statistics - Table 4: High vs Low Conflict Comparison
+# Description   : Difference Table - Table 4: High vs Low Conflict Comparison
 # Last Updated  : April 2026
 # ==============================================================================
 
@@ -22,7 +22,7 @@
 # Q3 of non-zero values) as defined in  02_data_cleaning.R.
 
 
-cat("\n=== BUILDING HIGH vs LOW CONFLICT DiD TABLES ===\n")
+cat("\n=== BUILDING HIGH vs LOW CONFLICT DIFFERENCE TABLES ===\n")
 
 
 # ==============================================================================
@@ -42,7 +42,7 @@ generate_conflict_did_table(
 )
 
 register_table(
-  section = "Summary Tables",
+  section = "Difference Tables",
   title   = "Table 4a — High vs Low Conflict (Age 0–17)",
   file    = "Tables_Summary/4a.Conflict_DiD_Table.html"
 )
@@ -65,7 +65,7 @@ generate_conflict_did_table(
 )
 
 register_table(
-  section = "Summary Tables",
+  section = "Difference Tables",
   title   = "Table 4b — High vs Low Conflict (Age 0–5)",
   file    = "Tables_Summary/4b.Conflict_DiD_Table.html"
 )
@@ -88,7 +88,7 @@ generate_conflict_did_table(
 )
 
 register_table(
-  section = "Summary Tables",
+  section = "Difference Tables",
   title   = "Table 4c — High vs Low Conflict (Age 6–12)",
   file    = "Tables_Summary/4c.Conflict_DiD_Table.html"
 )
@@ -111,10 +111,10 @@ generate_conflict_did_table(
 )
 
 register_table(
-  section = "Summary Tables",
+  section = "Difference Tables",
   title   = "Table 4d — High vs Low Conflict (Age 13–17)",
   file    = "Tables_Summary/4d.Conflict_DiD_Table.html"
 )
 
 
-cat("\n=== Conflict DiD tables complete ===\n")
+cat("\n=== Conflict Difference tables complete ===\n")

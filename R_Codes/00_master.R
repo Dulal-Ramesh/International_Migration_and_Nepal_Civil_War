@@ -96,6 +96,8 @@ source(file.path(r_scripts, "03_01_summary_overall.R"))
 source(file.path(r_scripts, "03_02_sample_construction.R"))
 
 source(file.path(r_scripts, "03_03_summary_multigroup.R"))
+
+source(file.path(r_scripts, "03_04_balance_0-17_Age.R"))
 # 
 # 
 # cat("========================================================\n")

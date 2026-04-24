@@ -6,5 +6,9 @@ const BASE = "https://dulal-ramesh.github.io/International_Migration_and_Nepal_C
 const TABLES = [
   { section: "Summary Tables", title: "Table 1 — Descriptive Statistics", url: BASE + "Tables_Summary/1.Overall_Summary.html" },
   { section: "Summary Tables", title: "Table 2 - Sample Construction", url: BASE + "Tables_Summary/2.Sample_Construction.html" },
-  { section: "Summary Tables", title: "Table 3 — Summary by Migration Type", url: BASE + "Tables_Summary/3.Multigroup_Summary.html" }
+  { section: "Summary Tables", title: "Table 3 — Summary by Migration Type", url: BASE + "Tables_Summary/3.Multigroup_Summary.html" },
+  { section: "Difference Tables", title: "Table 4a — High vs Low Conflict (Age 0–17)", url: BASE + "Tables_Summary/4a.Conflict_DiD_Table.html" },
+  { section: "Difference Tables", title: "Table 4b — High vs Low Conflict (Age 0–5)", url: BASE + "Tables_Summary/4b.Conflict_DiD_Table.html" },
+  { section: "Difference Tables", title: "Table 4c — High vs Low Conflict (Age 6–12)", url: BASE + "Tables_Summary/4c.Conflict_DiD_Table.html" },
+  { section: "Difference Tables", title: "Table 4d — High vs Low Conflict (Age 13–17)", url: BASE + "Tables_Summary/4d.Conflict_DiD_Table.html" }
 ];

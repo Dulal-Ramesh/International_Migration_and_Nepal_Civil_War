@@ -580,7 +580,291 @@ generate_balance_table <- function(data,
 
 
 # ==============================================================================
-# SECTION 10: TABLES REGISTRY (for auto-generating tables.js)----
+# SECTION 10: HIGH vs LOW CONFLICT DiD TABLE GENERATOR ----
+# ==============================================================================
+# Produces a descriptive table comparing High-Conflict and Low-Conflict districts
+# for a specified age cohort (default: 0-17 at conflict onset). Row structure
+# mirrors generate_balance_table() exactly (6 panels, 28 variable rows) so the
+# two tables can sit side-by-side in the paper. Column structure is simpler:
+#   Variable | High Mean | (SD) | Low Mean | (SD) | Diff (H-L) | (SE)
+#
+# Standard errors in the Diff column come from a district-clustered linear
+# regression (via feols) — the correct approach when the exposure variable
+# varies only at the district level. This is more defensible than a Welch
+# t-test and matches the SE treatment in the main regression pipeline.
+# ------------------------------------------------------------------------------
+
+# Clustered-SE helper: fit Y ~ D with district clusters, return diff/se/stars.
+# Returns NULL if the regression cannot be fit (e.g. no variation in D).
+# `scale` is applied to both the coefficient and SE (use 100 for binary vars
+# to report percentage-point differences, 1 for continuous).
+compute_clustered_diff_stats <- function(df, outcome_var, exposure_var,
+                                         cluster_var = "dist",
+                                         is_continuous = FALSE) {
+  # Drop rows with missing outcome, exposure, or cluster
+  sub <- df[, c(outcome_var, exposure_var, cluster_var)]
+  sub <- sub[complete.cases(sub), ]
+  
+  # Need variation in both outcome and exposure
+  if (length(unique(sub[[exposure_var]])) < 2) return(NULL)
+  if (nrow(sub) < 10)                          return(NULL)
+  
+  fml <- as.formula(paste(outcome_var, "~", exposure_var))
+  clust_fml <- as.formula(paste("~", cluster_var))
+  
+  fit <- tryCatch(
+    feols(fml, data = sub, cluster = clust_fml, warn = FALSE, notes = FALSE),
+    error = function(e) NULL
+  )
+  if (is.null(fit)) return(NULL)
+  
+  est <- tryCatch(summary(fit)$coeftable, error = function(e) NULL)
+  if (is.null(est) || !(exposure_var %in% rownames(est))) return(NULL)
+  
+  scale <- if (is_continuous) 1 else 100
+  diff  <- round(est[exposure_var, "Estimate"]   * scale, 2)
+  se    <- round(est[exposure_var, "Std. Error"] * scale, 2)
+  pval  <- est[exposure_var, "Pr(>|t|)"]
+  
+  stars <- case_when(
+    pval < 0.01 ~ "***",
+    pval < 0.05 ~ "**",
+    pval < 0.10 ~ "*",
+    TRUE        ~ ""
+  )
+  
+  list(diff = diff, se = se, stars = stars, pval = pval)
+}
+
+# Format the Diff column — "0.12***" or "" if stats are NULL.
+format_clustered_diff <- function(stats) {
+  if (is.null(stats)) return("")
+  paste0(stats$diff, stats$stars)
+}
+
+# Format standard error as "(0.05)" or "" if stats are NULL.
+format_clustered_se <- function(stats) {
+  if (is.null(stats)) return("")
+  paste0("(", stats$se, ")")
+}
+
+
+# -----------------------------------------------------------------------------
+# Main function. Mirrors generate_balance_table() but splits on a conflict-
+# intensity binary instead of a treat/control cohort.
+#
+# Arguments:
+#   data           : cleaned dataset (typically nlss_conflict_data)
+#   treat_age_min  : min age at conflict onset for the sample (default 0)
+#   treat_age_max  : max age at conflict onset for the sample (default 17)
+#   conflict_var   : name of the High/Low binary (e.g. "high_conflict_q3_binary")
+#   conflict_label : short label for the footnote (e.g. "Months of War (Q3)")
+#   cluster_var    : cluster variable for SEs (default "dist")
+#   file_label     : output filename prefix (e.g. "4a")
+#   caption_label  : caption text for the table (e.g. "Age 0-17 at Conflict Start")
+#   output_dir     : folder to write .tex and .html
+# -----------------------------------------------------------------------------
+
+generate_conflict_did_table <- function(data,
+                                        treat_age_min  = 0,
+                                        treat_age_max  = 17,
+                                        conflict_var   = "high_conflict_q3_binary",
+                                        conflict_label = "Months of War (Q3 cutoff)",
+                                        cluster_var    = "dist",
+                                        file_label,
+                                        caption_label,
+                                        output_dir) {
+  
+  # --- Restrict sample to the chosen cohort, require non-missing conflict var ---
+  samp <- data %>%
+    filter(age_at_conflict_start >= treat_age_min,
+           age_at_conflict_start <= treat_age_max,
+           !is.na(.data[[conflict_var]]))
+  
+  high_df <- samp %>% filter(.data[[conflict_var]] == 1)
+  low_df  <- samp %>% filter(.data[[conflict_var]] == 0)
+  
+  cat("=== Conflict DiD Sample Check (Age", treat_age_min, "-", treat_age_max, ") ===\n")
+  cat("  Total:         ", nrow(samp),    "\n")
+  cat("  High-Conflict: ", nrow(high_df), "\n")
+  cat("  Low-Conflict:  ", nrow(low_df),  "\n")
+  
+  # --- Single-group helpers ---
+  get_mean     <- function(df, var) round(mean(df[[var]], na.rm = TRUE), 2)
+  get_sd       <- function(df, var) paste0("(", round(sd(df[[var]], na.rm = TRUE), 2), ")")
+  get_mean_pct <- function(df, var) round(mean(df[[var]], na.rm = TRUE) * 100, 2)
+  get_sd_pct   <- function(df, var) paste0("(", round(sd(df[[var]], na.rm = TRUE) * 100, 2), ")")
+  
+  # --- Diff + SE from clustered regression on the FULL sample ---
+  get_diff <- function(var, is_continuous = FALSE) {
+    stats <- compute_clustered_diff_stats(samp, var, conflict_var,
+                                          cluster_var   = cluster_var,
+                                          is_continuous = is_continuous)
+    format_clustered_diff(stats)
+  }
+  
+  get_se <- function(var, is_continuous = FALSE) {
+    stats <- compute_clustered_diff_stats(samp, var, conflict_var,
+                                          cluster_var   = cluster_var,
+                                          is_continuous = is_continuous)
+    format_clustered_se(stats)
+  }
+  
+  # --- Row builders (7-column layout: Variable | H Mean | H SD | L Mean | L SD | Diff | SE) ---
+  row_cont <- function(label, var) data.frame(
+    Variable = label,
+    High_Mean = as.character(get_mean(high_df, var)), High_SD = get_sd(high_df, var),
+    Low_Mean  = as.character(get_mean(low_df,  var)), Low_SD  = get_sd(low_df,  var),
+    Diff_HL = get_diff(var, TRUE), SE = get_se(var, TRUE),
+    stringsAsFactors = FALSE)
+  
+  row_bin <- function(label, var) data.frame(
+    Variable = label,
+    High_Mean = as.character(get_mean_pct(high_df, var)), High_SD = get_sd_pct(high_df, var),
+    Low_Mean  = as.character(get_mean_pct(low_df,  var)), Low_SD  = get_sd_pct(low_df,  var),
+    Diff_HL = get_diff(var, FALSE), SE = get_se(var, FALSE),
+    stringsAsFactors = FALSE)
+  
+  row_blank <- function() data.frame(
+    Variable="", High_Mean="", High_SD="", Low_Mean="", Low_SD="", Diff_HL="", SE="",
+    stringsAsFactors = FALSE)
+  
+  row_panel <- function(label) data.frame(
+    Variable = label, High_Mean="", High_SD="", Low_Mean="", Low_SD="", Diff_HL="", SE="",
+    stringsAsFactors = FALSE)
+  
+  # --- Build table (row content identical to generate_balance_table()) ---
+  build_tbl <- function(latex = FALSE) {
+    tbl <- bind_rows(
+      row_panel("Panel A: Outcomes"),
+      row_bin("  International Migration (=1)",  "international_migrant"),
+      row_bin("  Currently Abroad (=1)",           "international_absentee_only"),
+      row_bin("  Return Migrant (=1)",             "present_ind_migrant"),
+      row_bin("  Internal Migration (=1)",         "national"),
+      row_blank(),
+      row_panel("Panel B: Exposure to Conflict"),
+      row_cont("  Months of War (own district)",        "mwar_own_any"),
+      row_cont("  Casualties (own district)",            "cas_own_any"),
+      row_cont("  Months of War (own district, fatal)",  "mwar_own_fatal"),
+      row_cont("  Casualties (own district, fatal)",     "cas_own_fatal"),
+      row_blank(),
+      row_panel("Panel C: Demographics"),
+      row_cont("  Current Age",           "age"),
+      row_cont("  Age at Conflict Start", "age_at_conflict_start"),
+      row_bin("  Male (=1)",              "male"),
+      row_blank(),
+      row_panel("Panel D: Education (%)"),
+      row_bin("  No Education",      "edu_no_education"),
+      row_bin("  Primary (1-5)",     "edu_primary"),
+      row_bin("  Secondary (6-12)",  "edu_secondary"),
+      row_bin("  Tertiary",          "edu_tertiary"),
+      row_blank(),
+      row_panel("Panel E: Ethnicity (%)"),
+      row_bin("  Hill High Caste", "eth_hill_high"),
+      row_bin("  Hill Janajati",   "eth_janajati"),
+      row_bin("  Terai/Madhesi",   "eth_terai"),
+      row_bin("  Dalit",           "eth_dalit"),
+      row_bin("  Muslim",          "eth_muslim"),
+      row_blank(),
+      row_panel("Panel F: Occupation (%)"),
+      row_bin("  Agriculture",             "occ_agriculture"),
+      row_bin("  High Skilled",            "occ_high_skilled"),
+      row_bin("  Service & Clerical",      "occ_service"),
+      row_bin("  Craft & Manufacturing",   "occ_craft"),
+      row_bin("  Elementary/Low Skilled",  "occ_elementary"),
+      row_bin("  Armed Forces",            "occ_armed"),
+      row_blank(),
+      data.frame(Variable = "N",
+                 High_Mean = as.character(nrow(high_df)), High_SD = "",
+                 Low_Mean  = as.character(nrow(low_df)),  Low_SD  = "",
+                 Diff_HL = "", SE = "",
+                 stringsAsFactors = FALSE)
+    )
+    if (latex) tbl <- tbl %>% mutate(Variable = sanitize_latex(Variable))
+    return(tbl)
+  }
+  
+  tbl_plain <- build_tbl(latex = FALSE)
+  tbl_latex <- build_tbl(latex = TRUE)
+  
+  col_names <- c("Variable",
+                 "High Mean", "(SD)",
+                 "Low Mean",  "(SD)",
+                 "Diff (H-L)", "(SE)")
+  col_align <- c("l", "r", "r", "r", "r", "r", "r")
+  
+  panel_rows <- which(tbl_latex$Variable %in% c(
+    "Panel A: Outcomes", "Panel B: Exposure to Conflict",
+    "Panel C: Demographics", "Panel D: Education (\\%)",
+    "Panel E: Ethnicity (\\%)", "Panel F: Occupation (\\%)"))
+  
+  footnote_text_latex <- paste(
+    paste0("Sample restricted to individuals aged ", treat_age_min, "--",
+           treat_age_max, " at conflict start (1996)."),
+    paste0("High-Conflict: districts above the 75th percentile of ",
+           conflict_label, "; Low-Conflict: at or below (including zeros)."),
+    "Standard deviations in parentheses.",
+    paste0("Diff (H-L) reports the coefficient from Y = a + b*HighConflict; ",
+           "standard errors in parentheses are clustered at the district level."),
+    "*** p$<$0.01, ** p$<$0.05, * p$<$0.10.",
+    "Source: Nepal Labor Force Survey; conflict data from INSEC."
+  )
+  
+  footnote_text_html <- paste(
+    paste0("Sample restricted to individuals aged ", treat_age_min, "-",
+           treat_age_max, " at conflict start (1996)."),
+    paste0("High-Conflict: districts above the 75th percentile of ",
+           conflict_label, "; Low-Conflict: at or below (including zeros)."),
+    "Standard deviations in parentheses.",
+    paste0("Diff (H-L) reports the coefficient from Y = a + b*HighConflict; ",
+           "standard errors in parentheses are clustered at the district level."),
+    "*** p<0.01, ** p<0.05, * p<0.10.",
+    "Source: Nepal Labor Force Survey; conflict data from INSEC."
+  )
+  
+  # --- LaTeX ---
+  latex_out <- kable(tbl_latex, format = "latex", booktabs = TRUE,
+                     caption = paste0("High- vs. Low-Conflict Comparison (", caption_label, ")"),
+                     label   = paste0("conflict_did_", file_label),
+                     col.names = col_names, escape = FALSE, align = col_align) %>%
+    kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9) %>%
+    add_header_above(c(" " = 1,
+                       "High-Conflict" = 2,
+                       "Low-Conflict"  = 2,
+                       " " = 2)) %>%
+    row_spec(panel_rows, bold = TRUE, italic = TRUE) %>%
+    footnote(general = footnote_text_latex, footnote_as_chunk = TRUE,
+             escape = FALSE) %>%
+    landscape()
+  
+  writeLines(as.character(latex_out),
+             file.path(output_dir, paste0(file_label, ".Conflict_DiD_Table.tex")))
+  
+  # --- HTML ---
+  html_out <- kable(tbl_plain, format = "html", col.names = col_names,
+                    align = col_align,
+                    caption = paste0("High- vs. Low-Conflict Comparison (",
+                                     caption_label, ")")) %>%
+    style_html_table(font_size = 13, fixed_thead = TRUE) %>%
+    add_header_above(c(" " = 1,
+                       "High-Conflict" = 2,
+                       "Low-Conflict"  = 2,
+                       " " = 2)) %>%
+    row_spec(0,          bold = TRUE) %>%
+    row_spec(panel_rows, background = "#f5f5f5", bold = TRUE) %>%
+    column_spec(1,   width = "20em") %>%
+    column_spec(2:7, width = "6em") %>%
+    footnote(general = footnote_text_html, footnote_as_chunk = TRUE)
+  
+  writeLines(as.character(html_out),
+             file.path(output_dir, paste0(file_label, ".Conflict_DiD_Table.html")))
+  
+  cat("=== Exported:", file_label, "Conflict_DiD_Table (.tex / .html) ===\n")
+}
+
+
+# ==============================================================================
+# SECTION 11: TABLES REGISTRY (for auto-generating tables.js)----
 # ==============================================================================
 # Populated by register_table() calls inside each table script, right after
 # writeLines(...) for the HTML output. At the end of 00_master.R, we write
