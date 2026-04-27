@@ -14,5 +14,6 @@ const TABLES = [
   { section: "Difference Tables", subsection: "Based on Casualty Number", title: "Table 5a — High vs Low Conflict (Age 0–17)", url: BASE + "Tables_Summary/5a.Conflict_DiD_Table.html" },
   { section: "Difference Tables", subsection: "Based on Casualty Number", title: "Table 5b — High vs Low Conflict (Age 0–5)", url: BASE + "Tables_Summary/5b.Conflict_DiD_Table.html" },
   { section: "Difference Tables", subsection: "Based on Casualty Number", title: "Table 5c — High vs Low Conflict (Age 6–12)", url: BASE + "Tables_Summary/5c.Conflict_DiD_Table.html" },
-  { section: "Difference Tables", subsection: "Based on Casualty Number", title: "Table 5d — High vs Low Conflict (Age 13–17)", url: BASE + "Tables_Summary/5d.Conflict_DiD_Table.html" }
+  { section: "Difference Tables", subsection: "Based on Casualty Number", title: "Table 5d — High vs Low Conflict (Age 13–17)", url: BASE + "Tables_Summary/5d.Conflict_DiD_Table.html" },
+  { section: "Difference Tables", subsection: "DiD Means (Two Measures)", title: "Table 6 — DiD Means by Cohort and Conflict Intensity", url: BASE + "Tables_Summary/6.DiD_Two_Measures.html" }
 ];
