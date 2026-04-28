@@ -6,60 +6,97 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Lora&display=swap" rel="stylesheet">
 
   <style>
-    body { font-family: 'Roboto', sans-serif; max-width: 800px; margin: 40px auto; }
-    h2   { font-family: 'Lora', serif; color: #2c3e50; border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-top: 30px; }
-    h3   { font-family: 'Lora', serif; color: #4a6278; margin-top: 18px; margin-bottom: 6px; font-size: 17px; font-weight: normal; font-style: italic; }
+    body { font-family: 'Roboto', sans-serif; max-width: 1200px; margin: 40px auto; padding: 0 24px; }
+    h1   { font-family: 'Lora', serif; color: #1a1a1a; margin-bottom: 30px; }
+    h2   { font-family: 'Lora', serif; color: #2c3e50; border-bottom: 1px solid #ccc; padding-bottom: 6px; margin: 0 0 10px; font-weight: 500; }
+    h3   { font-family: 'Lora', serif; color: #4a6278; margin: 14px 0 4px; font-size: 16px; font-weight: normal; font-style: italic; }
     a    { display: block; margin: 6px 0; font-size: 15px; }
     a:visited { color: #1a5490; }
     a:hover   { color: #2980b9; text-decoration: underline; }
+
+    /* Grid container — auto-fills with cards at least 360px wide */
+    #linksContainer {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
+    }
+
+    /* Each section becomes a card */
+    .section-card {
+      background: #fafafa;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 18px 22px;
+    }
+
     /* Indent links that sit under a subsection */
     .sub-entry { margin-left: 16px; }
+
+    /* On narrow screens, drop to single column with tighter padding */
+    @media (max-width: 600px) {
+      #linksContainer { grid-template-columns: 1fr; }
+      body { padding: 0 16px; }
+    }
   </style>
 </head>
 <body>
   <h1>Nepal Civil Conflict & International Migration</h1>
 
-  <!-- Links below are built automatically from tables.js -->
+  <!-- Cards below are built automatically from tables.js -->
   <div id="linksContainer"></div>
 
   <script src="tables.js"></script>
   <script>
     (function () {
       const container = document.getElementById("linksContainer");
-      let lastSection    = null;
-      let lastSubsection = null;
 
+      // Group tables by section, preserving original order
+      const grouped = [];
+      const sectionIndex = {};
       TABLES.forEach(function (t, i) {
-        // New top-level section → print an <h2> and reset subsection tracker
-        if (t.section !== lastSection) {
-          const h = document.createElement("h2");
-          h.textContent = t.section;
-          container.appendChild(h);
-          lastSection    = t.section;
-          lastSubsection = null;
+        if (!(t.section in sectionIndex)) {
+          sectionIndex[t.section] = grouped.length;
+          grouped.push({ section: t.section, entries: [] });
         }
+        grouped[sectionIndex[t.section]].entries.push({ ...t, index: i });
+      });
 
-        // New subsection (non-empty, different from last) → print an <h3>
-        const sub = t.subsection || "";
-        if (sub !== "" && sub !== lastSubsection) {
-          const h3 = document.createElement("h3");
-          h3.textContent = sub;
-          container.appendChild(h3);
-          lastSubsection = sub;
-        } else if (sub === "") {
-          // Reset: entries with no subsection should not inherit the last one
-          lastSubsection = null;
-        }
+      // Render one card per section, with sub-headings for subsections
+      grouped.forEach(function (group) {
+        const card = document.createElement("div");
+        card.className = "section-card";
 
-        const p = document.createElement("p");
-        // Indent if this entry belongs to a subsection
-        if (sub !== "") p.className = "sub-entry";
+        const h2 = document.createElement("h2");
+        h2.textContent = group.section;
+        card.appendChild(h2);
 
-        const a = document.createElement("a");
-        a.href = "viewer.html?i=" + i;
-        a.textContent = t.title;
-        p.appendChild(a);
-        container.appendChild(p);
+        let lastSubsection = null;
+        group.entries.forEach(function (t) {
+          const sub = t.subsection || "";
+
+          // New subsection → insert <h3>
+          if (sub !== "" && sub !== lastSubsection) {
+            const h3 = document.createElement("h3");
+            h3.textContent = sub;
+            card.appendChild(h3);
+            lastSubsection = sub;
+          } else if (sub === "") {
+            // Reset so a subsequent entry without subsection isn't visually grouped
+            lastSubsection = null;
+          }
+
+          const p = document.createElement("p");
+          p.style.margin = "0";
+          if (sub !== "") p.className = "sub-entry";
+
+          const a = document.createElement("a");
+          a.href = "viewer.html?i=" + t.index;
+          a.textContent = t.title;
+          p.appendChild(a);
+          card.appendChild(p);
+        });
+
+        container.appendChild(card);
       });
     })();
   </script>
