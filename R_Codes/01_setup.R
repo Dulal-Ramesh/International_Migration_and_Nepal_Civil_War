@@ -2046,7 +2046,257 @@ generate_did_two_measures_table <- function(data,
 
 
 # ==============================================================================
-# SECTION 12: TABLES REGISTRY (for auto-generating tables.js)----
+# SECTION 12: MAIN DiD REGRESSION TABLE GENERATOR ----
+# ==============================================================================
+# Produces a regression table for ONE migration outcome with two panels:
+#   Panel A: HighConflict defined by Months of War
+#   Panel B: HighConflict defined by Casualties
+# and four columns showing progressively richer specifications:
+#   (1) Raw OLS DiD (no FE, no controls)
+#   (2) + Demographic controls (sex, ethnicity dummies)
+#   (3) + District FE
+#   (4) + Age FE (preferred specification)
+#
+# In every column the SEs are clustered at the district level. The Treatment
+# main effect is absorbed by Age FE and the HighConflict main effect by
+# District FE in cols (3) and (4); only the interaction term is reported.
+
+# ------------------------------------------------------------------------------
+
+# Helper — fits one feols model and returns it.
+# Arguments:
+#   data         : analysis sample
+#   outcome_var  : LHS variable name (string)
+#   conflict_var : the HighConflict binary (string)
+#   include_demo : whether to add sex + ethnicity dummies
+#   include_dfe  : whether to absorb district fixed effects
+#   include_afe  : whether to absorb age fixed effects
+#   treat_var    : binary treatment indicator (default "treatment")
+#   cluster_var  : cluster variable (default "dist")
+#   scale        : multiply outcome by this (default 100 for binary -> %)
+fit_did_spec <- function(data,
+                         outcome_var,
+                         conflict_var,
+                         include_demo = FALSE,
+                         include_dfe  = FALSE,
+                         include_afe  = FALSE,
+                         treat_var    = "treatment",
+                         cluster_var  = "dist",
+                         scale        = 100) {
+  
+  # Demographic controls: male + ethnicity dummies (Hill High Caste reference)
+  demo_terms <- if (include_demo) {
+    "+ male + eth_janajati + eth_terai + eth_dalit + eth_muslim"
+  } else ""
+  
+  # Fixed-effects part of the formula (after `|`)
+  fe_terms <- if (include_dfe || include_afe) {
+    parts <- c()
+    if (include_dfe) parts <- c(parts, cluster_var)
+    if (include_afe) parts <- c(parts, "age")
+    paste0(" | ", paste(parts, collapse = " + "))
+  } else ""
+  
+  # Build the formula:
+  #   Y * scale ~ Treat + HC + Treat:HC [+ demo] [| FE]
+  rhs <- paste0(treat_var, " * ", conflict_var, demo_terms)
+  fml <- as.formula(paste0("I(", outcome_var, " * ", scale, ") ~ ", rhs, fe_terms))
+  
+  feols(fml, data = data, cluster = as.formula(paste("~", cluster_var)),
+        warn = FALSE, notes = FALSE)
+}
+
+
+# Main function — one outcome, two panels (two conflict measures), four specs.
+generate_did_regression_table <- function(data,
+                                          outcome_var,
+                                          outcome_label,
+                                          conflict_vars   = c("high_conflict_q3_binary",
+                                                              "high_conflict_casualty_binary"),
+                                          conflict_panel_labels = c(
+                                            "Panel A: High-Conflict Districts defined by Months of War",
+                                            "Panel B: High-Conflict Districts defined by Casualties"),
+                                          treat_var       = "treatment",
+                                          cluster_var     = "dist",
+                                          scale           = 100,
+                                          file_label,
+                                          caption_label,
+                                          output_dir) {
+  
+  cat("=== Main DiD Regression Table:", file_label, "(",
+      outcome_label, ") ===\n")
+  
+  # Build all 8 models: 2 conflict measures × 4 specs
+  spec_settings <- list(
+    list(demo = FALSE, dfe = FALSE, afe = FALSE),  # (1) Raw OLS
+    list(demo = TRUE,  dfe = FALSE, afe = FALSE),  # (2) + Demo
+    list(demo = TRUE,  dfe = TRUE,  afe = FALSE),  # (3) + District FE
+    list(demo = TRUE,  dfe = TRUE,  afe = TRUE)    # (4) + Age FE
+  )
+  
+  models_panelA <- lapply(spec_settings, function(s) {
+    fit_did_spec(data, outcome_var, conflict_vars[1],
+                 include_demo = s$demo, include_dfe = s$dfe, include_afe = s$afe,
+                 treat_var = treat_var, cluster_var = cluster_var, scale = scale)
+  })
+  models_panelB <- lapply(spec_settings, function(s) {
+    fit_did_spec(data, outcome_var, conflict_vars[2],
+                 include_demo = s$demo, include_dfe = s$dfe, include_afe = s$afe,
+                 treat_var = treat_var, cluster_var = cluster_var, scale = scale)
+  })
+  
+  # Extract the interaction coefficient + SE + stars from each model
+  extract_did <- function(m, treat_var, conflict_var) {
+    interaction_name <- paste0(treat_var, ":", conflict_var)
+    est <- summary(m)$coeftable
+    if (!(interaction_name %in% rownames(est))) return(list(coef = "", se = ""))
+    
+    coef_val <- est[interaction_name, "Estimate"]
+    se_val   <- est[interaction_name, "Std. Error"]
+    pval     <- est[interaction_name, "Pr(>|t|)"]
+    
+    stars <- case_when(
+      pval < 0.01 ~ "***",
+      pval < 0.05 ~ "**",
+      pval < 0.10 ~ "*",
+      TRUE        ~ ""
+    )
+    list(
+      coef = paste0(sprintf("%.2f", coef_val), stars),
+      se   = paste0("(", sprintf("%.2f", se_val), ")")
+    )
+  }
+  
+  panelA_stats <- lapply(models_panelA, extract_did, treat_var, conflict_vars[1])
+  panelB_stats <- lapply(models_panelB, extract_did, treat_var, conflict_vars[2])
+  
+  # Extract N and R² from each model (use first conflict measure — same N across)
+  ns  <- sapply(models_panelA, function(m) format(nobs(m), big.mark = ","))
+  r2s <- sapply(models_panelA, function(m) sprintf("%.3f", r2(m, type = "r2")))
+  
+  # Spec indicators (Yes/No row labels)
+  demo_row <- c("No", "Yes", "Yes", "Yes")
+  dfe_row  <- c("No", "No",  "Yes", "Yes")
+  afe_row  <- c("No", "No",  "No",  "Yes")
+  
+  # Build the table data frame
+  build_tbl <- function(latex = FALSE) {
+    
+    row_panel  <- function(label) data.frame(
+      Variable = label, c1 = "", c2 = "", c3 = "", c4 = "", stringsAsFactors = FALSE)
+    row_blank  <- function() data.frame(
+      Variable = "", c1 = "", c2 = "", c3 = "", c4 = "", stringsAsFactors = FALSE)
+    
+    coef_row <- function(stats_list) data.frame(
+      Variable = "  Treatment $\\times$ HighConflict",
+      c1 = stats_list[[1]]$coef, c2 = stats_list[[2]]$coef,
+      c3 = stats_list[[3]]$coef, c4 = stats_list[[4]]$coef,
+      stringsAsFactors = FALSE)
+    
+    se_row <- function(stats_list) data.frame(
+      Variable = "",
+      c1 = stats_list[[1]]$se, c2 = stats_list[[2]]$se,
+      c3 = stats_list[[3]]$se, c4 = stats_list[[4]]$se,
+      stringsAsFactors = FALSE)
+    
+    spec_row <- function(label, vals) data.frame(
+      Variable = label,
+      c1 = vals[1], c2 = vals[2], c3 = vals[3], c4 = vals[4],
+      stringsAsFactors = FALSE)
+    
+    tbl <- bind_rows(
+      row_panel(conflict_panel_labels[1]),
+      coef_row(panelA_stats),
+      se_row(panelA_stats),
+      row_blank(),
+      row_panel(conflict_panel_labels[2]),
+      coef_row(panelB_stats),
+      se_row(panelB_stats),
+      row_blank(),
+      spec_row("Demographic controls (sex, ethnicity)", demo_row),
+      spec_row("District FE",                            dfe_row),
+      spec_row("Age FE",                                  afe_row),
+      spec_row("Observations",                            ns),
+      spec_row("R$^2$",                                   r2s)
+    )
+    
+    if (!latex) {
+      # For HTML, replace LaTeX math with plain Unicode equivalents
+      tbl$Variable <- gsub("$\\times$",  "\u00D7", tbl$Variable, fixed = TRUE)
+      tbl$Variable <- gsub("R$^2$",       "R\u00B2", tbl$Variable, fixed = TRUE)
+    }
+    
+    tbl
+  }
+  
+  tbl_plain <- build_tbl(latex = FALSE)
+  tbl_latex <- build_tbl(latex = TRUE)
+  
+  col_names <- c("", "(1)", "(2)", "(3)", "(4)")
+  col_align <- c("l", "c", "c", "c", "c")
+  
+  # Identify special row positions
+  panel_rows <- which(grepl("^Panel [AB]:", tbl_latex$Variable))
+  
+  footnote_text_latex <- c(
+    paste0("Outcome: ", outcome_label, ", scaled to percentage points (multiplied by 100)."),
+    paste0("Sample: Treatment cohort (aged 0--17 at conflict onset, 1996) and Control cohort (aged 18--40), restricted to currently working-age adults in NLSS 2017/18."),
+    paste0("Treatment = 1 if individual was 0--17 in 1996; HighConflict = 1 if district above the 75th percentile of either months of war (Panel A) or total casualties (Panel B), 1996--2006."),
+    paste0("Coefficient reported is $\\beta_3$ from $Y = \\alpha + \\beta_1 \\cdot \\text{Treatment} + \\beta_2 \\cdot \\text{HighConflict} + \\beta_3 \\cdot (\\text{Treatment} \\times \\text{HighConflict}) + X\\beta + \\gamma_d + \\delta_a + \\varepsilon$."),
+    "Demographic controls: male indicator and ethnic-category dummies (Hill Janajati, Terai/Madhesi, Dalit, Muslim; Hill High Caste is the reference category).",
+    "Standard errors in parentheses, clustered at the district level.",
+    "*** p$<$0.01, ** p$<$0.05, * p$<$0.10.",
+    "Source: Nepal Labour Force Survey 2017/18; conflict data from INSEC."
+  )
+  
+  footnote_text_html <- c(
+    paste0("Outcome: ", outcome_label, ", scaled to percentage points (multiplied by 100)."),
+    "Sample: Treatment cohort (aged 0-17 at conflict onset, 1996) and Control cohort (aged 18-40), restricted to currently working-age adults in NLSS 2017/18.",
+    "Treatment = 1 if individual was 0-17 in 1996; HighConflict = 1 if district above the 75th percentile of either months of war (Panel A) or total casualties (Panel B), 1996-2006.",
+    "Coefficient reported is the interaction term from Y = a + b\u2081 \u00D7 Treatment + b\u2082 \u00D7 HighConflict + b\u2083 \u00D7 (Treatment \u00D7 HighConflict) + controls + district FE + age FE + error.",
+    "Demographic controls: male indicator and ethnic-category dummies (Hill Janajati, Terai/Madhesi, Dalit, Muslim; Hill High Caste is the reference category).",
+    "Standard errors in parentheses, clustered at the district level.",
+    "*** p<0.01, ** p<0.05, * p<0.10.",
+    "Source: Nepal Labour Force Survey 2017/18; conflict data from INSEC."
+  )
+  
+  # --- LaTeX ---
+  latex_out <- kable(tbl_latex, format = "latex", booktabs = TRUE,
+                     caption   = paste0("Effect of childhood conflict exposure on ",
+                                        outcome_label, " (", caption_label, ")"),
+                     label     = paste0("did_regression_", file_label),
+                     col.names = col_names, escape = FALSE, align = col_align) %>%
+    kable_styling(latex_options = c("hold_position"), font_size = 10) %>%
+    row_spec(panel_rows, bold = TRUE, italic = TRUE) %>%
+    footnote(general = footnote_text_latex, general_title = "Notes:",
+             footnote_as_chunk = FALSE, threeparttable = TRUE, escape = FALSE)
+  
+  writeLines(as.character(latex_out),
+             file.path(output_dir, paste0(file_label, ".DiD_Regression.tex")))
+  
+  # --- HTML ---
+  html_out <- kable(tbl_plain, format = "html", col.names = col_names, align = col_align,
+                    caption = paste0("Effect of childhood conflict exposure on ",
+                                     outcome_label, " (", caption_label, ")"),
+                    escape = FALSE) %>%
+    style_html_table(font_size = 13) %>%
+    row_spec(panel_rows, bold = TRUE, background = "#f5f5f5") %>%
+    column_spec(1, width = "20em",
+                extra_css = "padding-right: 1.5em;",
+                include_thead = TRUE) %>%
+    column_spec(2:5, width = "8em") %>%
+    footnote(general = footnote_text_html, general_title = "Notes:",
+             footnote_as_chunk = FALSE)
+  
+  writeLines(as.character(html_out),
+             file.path(output_dir, paste0(file_label, ".DiD_Regression.html")))
+  
+  cat("=== Exported:", file_label, "DiD_Regression (.tex / .html) ===\n")
+}
+
+
+# ==============================================================================
+# SECTION 13: TABLES REGISTRY (for auto-generating tables.js)----
 # ==============================================================================
 # Populated by register_table() calls inside each table script, right after
 # writeLines(...) for the HTML output. At the end of 00_master.R, we write
@@ -2082,34 +2332,3 @@ register_table <- function(section, title, file, subsection = "") {
   )
 }
 
-# ==============================================================================
-# SECTION 12: TABLES REGISTRY (for auto-generating tables.js)----
-# ==============================================================================
-# Populated by register_table() calls inside each table script, right after
-# writeLines(...) for the HTML output. At the end of 00_master.R, we write
-# tables.js using this registry. This drives the index.html and viewer.html
-# navigation on the GitHub Pages site.
-# ------------------------------------------------------------------------------
-
-tables_registry <- data.frame(
-  section = character(),
-  subsection = character(),
-  title   = character(),
-  file    = character(),   # path relative to Paper/Tables/
-  stringsAsFactors = FALSE
-)
-
-# Helper: call RIGHT AFTER writeLines() for each HTML table.
-# Example:
-#   register_table(
-#     section = "Summary Tables",
-#     title   = "Table 1 — Descriptive Statistics",
-#     file    = "Tables_Summary/1.Overall_Summary.html"
-#   )
-register_table <- function(section, title, file, subsection = "") {
-  tables_registry <<- rbind(
-    tables_registry,
-    data.frame(section = section, subsection = subsection, title = title, file = file,
-               stringsAsFactors = FALSE)
-  )
-}

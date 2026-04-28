@@ -103,7 +103,8 @@ source(file.path(r_scripts, "03_05_balance_0-17_Age_Num.R"))
 
 source(file.path(r_scripts, "03_06_did_tables.R"))
 
-# 
+source(file.path(r_scripts, "03_07_main_results.R"))
+ 
 # cat("========================================================\n")
 # cat(" STEP 4: Main Regression Analysis\n")
 # cat("========================================================\n")
