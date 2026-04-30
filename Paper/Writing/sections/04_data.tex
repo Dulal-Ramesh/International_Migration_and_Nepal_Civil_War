@@ -1,19 +1,68 @@
 \label{sec:data}
-\cite{Bohra-Mishra2011} The conflict intensity variable is defined on the basis of the month of war observed in a certain district. $months \, of \, war_{d}$ is defined as the total number of months, a district was exposed to conflict. This will be used as a baseline variable to represent the conflict intensity. This variable is constructed as below:
+
+\ramesh{This is new addition to the text}
+
+\subsection{Data Sources}
+
+Our primary outcomes data come from the Nepal Labour Force Survey (NLFS) 2017/18, which provides individual-level information on migration outcomes, demographic characteristics, and educational attainment for approximately 90,000 individuals across all 75 districts of Nepal. Conflict intensity data come from the Informal Sector Service Centre (INSEC) database, which records the date, location, and casualty count of every conflict incident during Nepal's civil war (1996--2006). We aggregate the INSEC data to the district-month level and merge it with the NLFS using district of birth.
+
+
+\subsection{Sample Construction and Cohort Definitions}
+
+Following the difference-in-differences strategy of \cite{10.1257/aer.91.4.795}, we define two cohorts based on age at beginning of conflict in 1996. The \emph{treatment cohort} consists of individuals aged 0--17 at conflict onset (currently 21--38 in NLFS 2017/18), all of whom were children during the conflict period. The \emph{control cohort} consists of individuals aged 26--40 at conflict onset (currently 47--61), all of whom were already adults when the conflict began.
+
+Two design choices shape this sample. First, we exclude individuals aged 18--25 at conflict onset (currently 39--46) from the analysis. These individuals were old enough to make decisions towards early-adult migration, marriage timing, and labor market entry in response to conflict or simply their outcomes reflect adult decisions during conflict. Including them as part of the treatment cohort would contaminate the childhood-exposure interpretation.  Including them as part of the control cohort would violate the assumption that the control group is unaffected by conflict. The exclusion preserves a clean cohort distinction between unambiguously childhood-exposed and unambiguously adult-during-conflict individuals. Second, we cap the control cohort at age 40 at conflict onset (currently 61) to ensure that both cohorts will have comparable working-age windows. The resulting analysis sample includes 37,174 individuals across 75 districts. Robustness checks in Section~\ref{sec:robustness} verify that our findings are not driven by these restrictions.
+
+Table~\ref{tab:sample_construction} summarizes the details on how the analysis analysis sample is achieved. 
+
+\input{Paper/Tables/Tables_Summary/2.Sample_Construction}
+
+\subsection{Conflict Intensity Measures}
+
+Following \cite{Bohra-Mishra2011}, we define the conflict intensity variable on the basis of the month of war observed in a certain district. $\textit{months of war}_{d}$ is defined as the total number of months, a district was exposed to conflict. This will be used as a baseline variable to represent the conflict intensity. This variable is constructed as below:
 \begin{equation}
-\text{conflict}_{d 1}
-=\text{months of war}_{d}
-=\sum_{m=1}^{131} 1(\text{casualty}_{d m}).
+\textit{conflict}_{d 1}
+=\textit{months of war}_{d}
+=\sum_{m=1}^{131} 1(\textit{casualty}_{d m}).
 \label{eq:months_of_war}
 \end{equation}
 \[
-1(\text{casualty}_{dm})=
+1(\textit{casualty}_{dm})=
 \begin{cases}
-1, & \text{if } \text{casualty}_{dm}>0,\\
-0, & \text{otherwise.}
+1, & \text{if } \textit{casualty}_{dm}>0,\\
+0, & \textit{otherwise.}
 \end{cases}
 \]
 Subscripts $d$ and $m$ represent district and month of war. $m$ takes the value upto 131 due to the fact that the Maoist conflict reigned from February 1996 to November 2006 with total of 131 months.
+
+\ramesh{Added this text to clear the sample description}
+
+The treatment cohort consists of individuals aged 0--17 at the onset of conflict in 1996 (currently 21--38 in NLFS 2017) and the control cohort consists of the individuals aged 26--40 at conflict onset (currently 47--61). Individuals aged 18--25 at the beginning of conflict in 1996 (currently 39-46) are excluded from the main analysis sample.
+
+For our main DiD specification, we convert the months-of-war measure into a binary indicator $P_d$ equal to one if district $d$ falls above the 75\textsuperscript{th} percentile of the distribution. Figure~\ref{fig:conflict_map} displays the resulting spatial classification: high-conflict districts are concentrated in the mid-western and far-western regions, consistent with the geographic origins and operational base of the Maoist insurgency. The variation in conflict exposure across districts is the spatial source of identification in our DiD design.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Paper/Figures/month_of_war_intensity_1.png}
+    \caption{High-Conflict Districts (Months of War, $75^{th}$ Percentile Cutoff)}
+    \label{fig:conflict_map}
+    \begin{minipage}{0.9\textwidth}
+        \footnotesize
+        \emph{Notes:} Districts shaded in dark are classified as high-conflict 
+        ($P_d = 1$); districts in light shading are low-conflict ($P_d = 0$). 
+        Classification is based on whether the total months of war (Equation~\ref{eq:months_of_war}) 
+        exceeds the 75th percentile across all districts. Source: Authors' 
+        calculations from INSEC conflict database (1996--2006). Alternative 
+        intensity measures and continuous versions are reported in Appendix. 
+        \end{minipage}
+\end{figure}
+
+We report results using the casualty-based binary measure as a robustness 
+check and the continuous versions of both measures in Appendix~\ref{appendix:robustness}.
+
+\drghosh{improve this}
+
+\subsection{Descriptive Statistics}
 
 
 \input{Paper/Tables/Tables_Summary/1.Overall_Summary}
@@ -21,8 +70,6 @@ Subscripts $d$ and $m$ represent district and month of war. $m$ takes the value 
 \newpage
 \input{Paper/Tables/Tables_Summary/7.Multigroup_Summary}
 
-\newpage
-\input{Paper/Tables/Tables_Summary/11.Balance_Table}
 
 % \newpage
 % \input{Summary Tables/Summary Stat by Treatment }
@@ -51,3 +98,5 @@ Subscripts $d$ and $m$ represent district and month of war. $m$ takes the value 
 % % \input{Summary Tables/DID table War Based}
 % % \vspace{3cm}
 % % \input{Summary Tables/DID table Casualty Based}
+
+

@@ -1,11 +1,32 @@
 \label{sec:methods}
 
-We estimate:
+Following \cite{10.1257/aer.91.4.795}, we estimate:
 \begin{equation}
-y_{itdc} = \alpha + \beta_{c}\,(Conflict\,Exposure_{d}\times \lambda_{c}) + \lambda_{c} + \delta_t + \eta_{d} + X'_{i} + \varepsilon_{itdc},
+Y_{idk} = c_{1} + \alpha_{d} + \beta_{k} + (P_d \times T_i)\gamma + \mathbf{X}_i' \delta  + \varepsilon_{idk}
 \label{eq:did}
 \end{equation}
-where $y$ is an binary outcome variable for individual $i$ going abroad or not in the year $t$, from district $d$ and cohort $c$, $Conflict \, Exposure$ indicates the different measures for exposure to war, $\lambda$ represents the cohort,  $\lambda_{c}$ denotes cohort fixed effect, $\delta_{t}$ is the year fixed effect and $\eta_{d}$ represents district fixed effects. $\varepsilon$ is a random, idiosyncratic error term. The coefficient $\beta$ captures the average treatment effect on the treated. $X^{'}_{i}$ represents the individual level controls including the individual's sex, educational attainment and ethnicity. \\
-Various measures of Conflict Exposure have been discussed in Equations \ref{eq:months_of_war} to 
+where $Y_{idk}$ is an indicator for migration outcome for individual $i$, born in district $d$ and in year $k$. $\alpha_{d}$ is a district fixed effect, $\beta_{k}$ is a birth-year fixed effect, $T_i$ is an indicator variable for the child cohort exposed to conflict in their childhood (aged 0--17 at the beginning of conflict in 1996), and $P_d$ is an indicator for high conflict districts (above 75\textsuperscript{th} percentile of months of war from 1996--2006). $\mathbf{X}_i$ is a vector of individual-level controls including sex, ethnicity, education attainment. $\varepsilon_{idk}$ is a random, idiosyncratic error term, and standart errors are clustered at the district level. The coefficient $\gamma$ is our coefficient of interest which captures the effect of exposure to conflict in the childhood. 
 
+Various measures of Conflict Intensity $(P_d)$ have been discussed in Equation~\ref{eq:months_of_war} 
 
+\ramesh{Added the following text for event study design}
+
+To examine how the effect of conflict exposure varies across cohorts, and to assess the parallel trends assumption underlying our identification, we generalize Equation~\ref{eq:did} to estimate age-specific coefficients:
+\begin{equation}
+Y_{idk} = c_{2} + \alpha_{d} + \beta_{k} + \sum_{\ell = 0}^{40}\bigl(P_d \times \mathbf{1}[A_i = \ell]\bigr)\gamma_{\ell} + \mathbf{X}_i' \delta + \varepsilon_{idk}
+\label{eq:event_study}
+\end{equation}
+where $A_i$ denotes the age of individual $i$ when conflict started (1996) and $\mathbf{1}[\cdot]$ is the indicator function. The reference age is $r = 26$, the youngest age in the control cohort. Each coefficient $\gamma_{\ell}$ measures the effect of being in a high-conflict district for individuals aged $\ell$ at conflict onset, relative to the reference cohort.
+
+This specification serves two purposes. First, it traces the dose-response curve across childhood ages ($\ell = 0, 1, \ldots, 17$), revealing whether the effect concentrates in any specific age. Second, the coefficients for placebo ages ($\ell = 27, 28, \ldots, 40$) provide a visual test of the parallel trends assumption.
+
+Thus, in the main DiD specification, the control group is the adult cohort aged 26-40 at the beginning of conflict. In the event-study specification, these adult cohorts are shown separately by age and serve as placebo cohorts because they were already adults when the conflict began, their age-specific coefficients should be close to zero if childhood exposure is the relevant channel.
+
+Figure~\ref{fig:event_map} shows the event study based on the conflict intensity by months of war.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Paper/Figures/8a_intl_migrant_months_event_study.png}
+    \caption{}
+    \label{fig:event_map}
+\end{figure}

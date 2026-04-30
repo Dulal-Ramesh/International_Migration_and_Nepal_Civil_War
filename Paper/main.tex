@@ -11,11 +11,12 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{microtype}
-\usepackage{amsmath, amssymb}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{amsfonts}
 \usepackage{graphicx}
 \usepackage{pdflscape}
-\usepackage{booktabs, threeparttable}
+\usepackage{booktabs}
 \usepackage{siunitx}
 \usepackage{makecell} % For keeping the standard errors below mean
 \usepackage{caption}
@@ -26,13 +27,16 @@
 \usepackage{threeparttable}
 \usepackage{lineno} % uncomment for line numbers during review
 \usepackage{comment}
+\usepackage{xcolor}
+\newcommand{\ramesh}[1]{\textcolor{red}{[Ramesh: #1]}}
+\newcommand{\drghosh}[1]{\textcolor{red}{[Dr. Ghosh: #1]}}
 
 % ---------- Setup ----------
 \graphicspath{{figures/}}
 \hypersetup{
 colorlinks=true,
-linkcolor=black,
-citecolor=black,
+linkcolor=blue,
+citecolor=blue,
 urlcolor=black
 }
 \sisetup{detect-all, table-number-alignment=center}
