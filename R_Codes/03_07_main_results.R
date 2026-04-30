@@ -33,7 +33,7 @@ generate_did_regression_table(
   cluster_var   = "dist",
   scale         = 100,
   file_label    = "7a",
-  caption_label = "Treatment 0-17 vs Control 18-40 at Conflict Onset",
+  caption_label = "Treatment 0-17 vs Control 26-40 at Conflict Onset",
   output_dir    = tables_main
 )
 
@@ -61,7 +61,7 @@ generate_did_regression_table(
   cluster_var   = "dist",
   scale         = 100,
   file_label    = "7b",
-  caption_label = "Treatment 0-17 vs Control 18-40 at Conflict Onset",
+  caption_label = "Treatment 0-17 vs Control 26-40 at Conflict Onset",
   output_dir    = tables_main
 )
 
@@ -89,7 +89,7 @@ generate_did_regression_table(
   cluster_var   = "dist",
   scale         = 100,
   file_label    = "7c",
-  caption_label = "Treatment 0-17 vs Control 18-40 at Conflict Onset",
+  caption_label = "Treatment 0-17 vs Control 26-40 at Conflict Onset",
   output_dir    = tables_main
 )
 
@@ -117,7 +117,7 @@ generate_did_regression_table(
   cluster_var   = "dist",
   scale         = 100,
   file_label    = "7d",
-  caption_label = "Treatment 0-17 vs Control 18-40 at Conflict Onset",
+  caption_label = "Treatment 0-17 vs Control 26-40 at Conflict Onset",
   output_dir    = tables_main
 )
 

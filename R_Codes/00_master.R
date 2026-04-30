@@ -6,7 +6,7 @@
 # Last Modified: April 2026
 #
 # DESCRIPTION:
-# This master script runs all analysis scripts in sequence.
+# This master script runs the current analysis pipeline in sequence.
 # You can run the entire analysis by sourcing this single file,
 # or run individual scripts for specific tasks.
 #
@@ -87,9 +87,8 @@ cat(" STEP 2: Data Cleaning & Variable Creation\n")
 cat("========================================================\n")
 source(file.path(r_scripts, "02_data_cleaning.R"))
 
-# 
 cat("========================================================\n")
-cat(" STEP 3: Summary Statistics & Descriptive Tables\n")
+cat(" STEP 3: Analysis Tables & Event Study\n")
 cat("========================================================\n")
 source(file.path(r_scripts, "03_01_summary_overall.R"))
 
@@ -106,25 +105,6 @@ source(file.path(r_scripts, "03_06_did_tables.R"))
 source(file.path(r_scripts, "03_07_main_results.R"))
 
 source(file.path(r_scripts, "03_08_event_study.R"))
- 
-# cat("========================================================\n")
-# cat(" STEP 4: Main Regression Analysis\n")
-# cat("========================================================\n")
-# source(file.path(r_scripts, "04_regression_main.R"))
-# 
-# 
-# cat("========================================================\n")
-# cat(" STEP 5: Robustness Checks\n")
-# cat("========================================================\n")
-# source(file.path(r_scripts, "05_robustness.R"))
-# 
-# 
-# cat("========================================================\n")
-# cat(" STEP 6: Mechanism Analysis (Occupation & Education Channels)\n")
-# cat("========================================================\n")
-# source(file.path(r_scripts, "06_mechanism_analysis.R"))
-# 
-# 
 
 # ==============================================================================
 # SECTION 4: AUTO-GENERATE tables.js FOR GITHUB PAGES NAVIGATION----

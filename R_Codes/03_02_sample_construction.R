@@ -55,7 +55,7 @@ n_total_excluded   <- sum(c(n_too_young_2017, n_too_old_2017, n_too_young_conf,
 # Step 5: Treatment cohort (any age at conflict onset 0-17)
 n_treatment <- sum(nlss_analysis_sample$treatment == 1, na.rm = TRUE)
 
-# Step 6: Control cohort (age at conflict onset 18-40)
+# Step 6: Control cohort (age at conflict onset 26-40)
 n_control <- sum(nlss_analysis_sample$treatment == 0, na.rm = TRUE)
 
 # Step 7: Final analysis sample
@@ -126,17 +126,17 @@ sample_construction <- bind_rows(
            reason  = "Already past career-formation stage when conflict began"),
   row_step("4e. Exclude: overlap age cohort",
            dropped = n_overlap_age,
-           reason  = "Age 18 at conflict start and 41-46 in 2017; ambiguous exposure"),
+           reason  = "Ages 18-25 at conflict start; omitted from the control window"),
   row_step("4f. Other exclusions",
            dropped = n_other_excluded,
            reason  = "Age combinations outside treatment/control definitions"),
   row_blank(),
   
   row_header("Panel C: Main estimation sample"),
-  row_step("5. Treatment cohort (age 0-17 at conflict start, 18-45 in 2017)",
+  row_step("5. Treatment cohort (age 0-17 at conflict start)",
            n = n_treatment,
            reason = "Exposed to conflict during childhood/adolescence"),
-  row_step("6. Control cohort (age 18-40 at conflict start, 47-65 in 2017)",
+  row_step("6. Control cohort (age 26-40 at conflict start)",
            n = n_control,
            reason = "Fully formed adults when conflict began"),
   row_step("7. MAIN ESTIMATION SAMPLE (Treatment + Control)",
@@ -155,9 +155,8 @@ notes_sample <- c(
   paste0("Conflict exposure data from INSEC covering 1996-2006. District ",
          "information required to merge conflict and survey data."),
   paste0("Cohort definitions are based on age at conflict onset (1996): ",
-         "treatment = age 0-17, control = age 18-40. Current-age windows in ",
-         "2017 (18-45 for treatment; 47-65 for control) ensure both cohorts ",
-         "are working-age adults at survey."),
+         "treatment = age 0-17, control = age 26-40. Ages 18-25 at conflict ",
+         "onset are excluded from the main analysis sample."),
   paste0("Regressions that additionally control for education or occupation ",
          "will have slightly smaller samples due to listwise deletion of ",
          "missing covariates. The final analysis sample of ", fmt_n(n_analysis),

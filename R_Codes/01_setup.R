@@ -382,7 +382,7 @@ style_html_table <- function(kbl,
 generate_balance_table <- function(data,
                                    treat_age_min,
                                    treat_age_max,
-                                   ctrl_age_min       = 18,
+                                   ctrl_age_min       = 26,
                                    ctrl_age_max       = 40,
                                    treat_curr_age_min = 18,
                                    treat_curr_age_max = 45,
@@ -1247,7 +1247,7 @@ style_html_table <- function(kbl,
 generate_balance_table <- function(data,
                                    treat_age_min,
                                    treat_age_max,
-                                   ctrl_age_min       = 18,
+                                   ctrl_age_min       = 26,
                                    ctrl_age_max       = 40,
                                    treat_curr_age_min = 18,
                                    treat_curr_age_max = 45,
@@ -1925,7 +1925,7 @@ generate_did_two_measures_table <- function(data,
   
   # Row labels for every panel (3 rows)
   row_labels <- c("  Aged 0-17 in 1996 (Treatment)",
-                  "  Aged 18-40 in 1996 (Control)",
+                  "  Aged 26-40 in 1996 (Control)",
                   "  Difference")
   
   # Build the full table — one panel header + 3 rows × N outcomes
@@ -1977,8 +1977,8 @@ generate_did_two_measures_table <- function(data,
   panel_rows <- which(grepl("^Panel [A-Z]:", tbl_latex$Variable))
   
   footnote_text_latex <- c(
-    paste0("Treatment cohort: aged 0--17 at conflict onset (1996), currently 18--45 in NLSS 2017/18."),
-    paste0("Control cohort: aged 18--40 at conflict onset, currently 47--65."),
+    paste0("Treatment cohort: aged 0--17 at conflict onset (1996)."),
+    paste0("Control cohort: aged 26--40 at conflict onset."),
     paste0(conflict_labels[1], ": districts above the 75th percentile of months with any violent incident, 1996--2006."),
     paste0(conflict_labels[2], ": districts above the 75th percentile of total casualties, 1996--2006."),
     "Cell entries: mean above standard error in parentheses; standard errors clustered at the district level.",
@@ -1991,8 +1991,8 @@ generate_did_two_measures_table <- function(data,
   )
   
   footnote_text_html <- c(
-    "Treatment cohort: aged 0-17 at conflict onset (1996), currently 18-45 in NLSS 2017/18.",
-    "Control cohort: aged 18-40 at conflict onset, currently 47-65.",
+    "Treatment cohort: aged 0-17 at conflict onset (1996).",
+    "Control cohort: aged 26-40 at conflict onset.",
     paste0(conflict_labels[1], ": districts above the 75th percentile of months with any violent incident, 1996-2006."),
     paste0(conflict_labels[2], ": districts above the 75th percentile of total casualties, 1996-2006."),
     "Cell entries: mean above standard error in parentheses; standard errors clustered at the district level.",
@@ -2240,7 +2240,7 @@ generate_did_regression_table <- function(data,
   
   footnote_text_latex <- c(
     paste0("Outcome: ", outcome_label, ", scaled to percentage points (multiplied by 100)."),
-    paste0("Sample: Treatment cohort (aged 0--17 at conflict onset, 1996) and Control cohort (aged 18--40), restricted to currently working-age adults in NLSS 2017/18."),
+    paste0("Sample: Treatment cohort (aged 0--17 at conflict onset, 1996) and Control cohort (aged 26--40), restricted to currently working-age adults in NLSS 2017/18."),
     paste0("Treatment = 1 if individual was 0--17 in 1996; HighConflict = 1 if district above the 75th percentile of either months of war (Panel A) or total casualties (Panel B), 1996--2006."),
     paste0("Coefficient reported is $\\beta_3$ from $Y = \\alpha + \\beta_1 \\cdot \\text{Treatment} + \\beta_2 \\cdot \\text{HighConflict} + \\beta_3 \\cdot (\\text{Treatment} \\times \\text{HighConflict}) + X\\beta + \\gamma_d + \\delta_a + \\varepsilon$."),
     "Demographic controls: male indicator and ethnic-category dummies (Hill Janajati, Terai/Madhesi, Dalit, Muslim; Hill High Caste is the reference category).",
@@ -2251,7 +2251,7 @@ generate_did_regression_table <- function(data,
   
   footnote_text_html <- c(
     paste0("Outcome: ", outcome_label, ", scaled to percentage points (multiplied by 100)."),
-    "Sample: Treatment cohort (aged 0-17 at conflict onset, 1996) and Control cohort (aged 18-40), restricted to currently working-age adults in NLSS 2017/18.",
+    "Sample: Treatment cohort (aged 0-17 at conflict onset, 1996) and Control cohort (aged 26-40), restricted to currently working-age adults in NLSS 2017/18.",
     "Treatment = 1 if individual was 0-17 in 1996; HighConflict = 1 if district above the 75th percentile of either months of war (Panel A) or total casualties (Panel B), 1996-2006.",
     "Coefficient reported is the interaction term from Y = a + b\u2081 \u00D7 Treatment + b\u2082 \u00D7 HighConflict + b\u2083 \u00D7 (Treatment \u00D7 HighConflict) + controls + district FE + age FE + error.",
     "Demographic controls: male indicator and ethnic-category dummies (Hill Janajati, Terai/Madhesi, Dalit, Muslim; Hill High Caste is the reference category).",
@@ -2304,7 +2304,7 @@ generate_did_regression_table <- function(data,
 #       sum_{l != ref}( P_j * 1[age_at_conflict_start = l] ) * gamma_l + e
 #
 # and plots gamma_l on the y-axis against age-at-conflict-onset on the x-axis,
-# with 95% confidence intervals. The reference age (default 18) gets gamma = 0
+# with 95% confidence intervals. The reference age gets gamma = 0
 # by construction.
 #
 # What to look for in the resulting plot:
@@ -2328,7 +2328,7 @@ generate_event_study_plot <- function(data,
                                       conflict_label,
                                       age_var          = "age_at_conflict_start",
                                       treatment_cutoff = 17,   # last "treated" age
-                                      ref_age          = 18,   # omitted reference
+                                      ref_age          = 26,   # omitted reference
                                       cluster_var      = "dist",
                                       birthyear_var    = "age",  # FE for birth-year
                                       scale            = 100,
@@ -2597,4 +2597,3 @@ register_table <- function(section, title, file, subsection = "") {
                stringsAsFactors = FALSE)
   )
 }
-

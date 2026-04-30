@@ -239,7 +239,6 @@ nlss_conflict_data <- nlss_conflict_data %>%
       age_at_conflict_start >= 13 & age_at_conflict_start <= 17 & age >= 18 & age <= 45 ~ "Treatment: Age 13-17 in 1996",
       
       # CONTROL: Adult during conflict
-      age_at_conflict_start >= 18 & age_at_conflict_start <= 25 & age >= 47 & age <= 65 ~ "Control: Age 18-25 in 1996",
       age_at_conflict_start >= 26 & age_at_conflict_start <= 35 & age >= 47 & age <= 65 ~ "Control: Age 26-35 in 1996",
       age_at_conflict_start >= 36 & age_at_conflict_start <= 40 & age >= 47 & age <= 65 ~ "Control: Age 36-40 in 1996",
       
@@ -271,7 +270,6 @@ nlss_conflict_data <- nlss_conflict_data %>%
       cohort_group == "Treatment: Age 0-5 in 1996"  ~ "T: 0-5",
       cohort_group == "Treatment: Age 6-12 in 1996" ~ "T: 6-12",
       cohort_group == "Treatment: Age 13-17 in 1996"~ "T: 13-17",
-      cohort_group == "Control: Age 18-25 in 1996"  ~ "C: 18-25",
       cohort_group == "Control: Age 26-35 in 1996"  ~ "C: 26-35",
       cohort_group == "Control: Age 36-40 in 1996"  ~ "C: 36-40",
       TRUE                                           ~ "Excluded"
@@ -393,7 +391,7 @@ nlss_conflict_data <- nlss_conflict_data %>%
 #
 #   nlss_analysis_sample    — Cohort-restricted analysis sample (~37k obs).
 #                             Keeps only individuals in Treatment (age 0-17
-#                             at conflict start) or Control (age 18-40 at
+#                             at conflict start) or Control (age 26-40 at
 #                             conflict start). This is the sample for the
 #                             balance table, main regressions, and all
 #                             treatment-vs-control comparisons.

@@ -93,11 +93,10 @@ age at start of conflict $\geq 0$ & age at start of conflict $\leq 5$ and curren
 age at start of conflict $\geq 6$ & age at start of conflict $\leq 12$ and current age $\geq 18$ & current age $\leq 45$
 - **Treatment3**: 13-17 years in 1996; Sample who are included in the following category: <br>
 age at start of conflict $\geq 13$ & age at start of conflict $\leq 17$ and current age $\geq 18$ & current age $\leq 45$
-- **Control1**: 18-25 years in 1996; Sample who are included in the following category: <br>
-age at start of conflict $\geq 18$ & age at start of conflict $\leq 25$ and current age $\geq 47$ & current age $\leq 65$
-- **Control2**: 26-35 years in 1996; Sample who are included in the following category: <br>
+- Ages 18-25 in 1996 are excluded from the main analysis sample.
+- **Control1**: 26-35 years in 1996; Sample who are included in the following category: <br>
 age at start of conflict $\geq 26$ & age at start of conflict $\leq 35$ and current age $\geq 47$ & current age $\leq 65$
-- **Control3**: 36-40 years in 1996; Sample who are included in the following category: <br>
+- **Control2**: 36-40 years in 1996; Sample who are included in the following category: <br>
 age at start of conflict $\geq 36$ & age at start of conflict $\leq 40$ and current age $\geq 47$ & current age $\leq 65$
 
 
@@ -120,7 +119,7 @@ This folder contains R codes and two folders [functions](/source_code/functions/
 
 - [06_Final_Data.do](/source_code/STATA_Codes/06_Final_Data.do) uses NLFS dataset, merges them and create a data for international migrants and combines with the conflict related variables to produce the final dataset *1_conflict_present_absentee_data.dta*.
 
-The folder [Source Code](/source_code/) contains different code files: [Master](/source_code/00_master.R) which runs all the codes in order, [Setup](/source_code/01_setup.R); contains data paths, packages and global settings,  [Data Cleaning](/source_code/02_data_cleaning.R); Import, clean data, create variables, categorises treatment/control cohorts and intensity of conflict,  [Summary](/source_code/03_summary_statistics.R); produces descriptive statistics, balance check and DiD Framework, [Main Regression](/source_code/04_regression_main.R); includes all main DiD regression, [Robustness Check](/source_code/05_robustness.R); contains codes for sensitivity analysis, [Mechanism Analysis](/source_code/06_mechanism_analysis.R); contains codes for analysis of the channels  and [Helper Function](/source_code/Helper_functions.R) contains codes for formatting the tables and coefficient dictionaries.
+The folder [Source Code](/source_code/) contains different code files: [Master](/source_code/00_master.R) which runs the current analysis pipeline, [Setup](/source_code/01_setup.R); contains data paths, packages, helper functions, and global settings, [Data Cleaning](/source_code/02_data_cleaning.R); imports and cleans data, creates variables, categorises treatment/control cohorts, and defines conflict intensity, and the `03_*` analysis scripts; produce summary tables, difference tables, main DiD tables, and event-study outputs.
 
 ## How to Use
 ### Option 1: Run Everything at once

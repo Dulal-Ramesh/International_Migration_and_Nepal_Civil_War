@@ -34,7 +34,7 @@ generate_did_two_measures_table(
   treat_var       = "treatment",
   cluster_var     = "dist",
   file_label      = "6",
-  caption_label   = "Treatment 0-17 vs Control 18-40 at Conflict Onset",
+  caption_label   = "Treatment 0-17 vs Control 26-40 at Conflict Onset",
   output_dir      = tables_summary
 )
 

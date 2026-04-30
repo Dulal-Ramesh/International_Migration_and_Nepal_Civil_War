@@ -21,13 +21,13 @@ Panel A: From raw data to cleaned sample &  &  \vphantom{1} & \\
 4c. Exclude: too young during conflict (age < 6 at conflict end) &  & 0 & Insufficient exposure window during formative years\\
 4d. Exclude: too old at conflict start (age 41+ in 1996) &  & 1,958 & Already past career-formation stage when conflict began\\
 \addlinespace
-4e. Exclude: overlap age cohort &  & 7,889 & Age 18 at conflict start and 41-46 in 2017; ambiguous exposure\\
+4e. Exclude: overlap age cohort &  & 7,889 & Ages 18-25 at conflict start; omitted from the control window\\
 4f. Other exclusions &  & 6,231 & Age combinations outside treatment/control definitions\\
  &  &  & \\
 \textbf{Panel C: Main estimation sample} & \textbf{} & \textbf{} & \textbf{}\\
 5. Treatment cohort (age 0-17 at conflict start, 18-45 in 2017) & 27,444 &  & Exposed to conflict during childhood/adolescence\\
 \addlinespace
-6. Control cohort (age 18-40 at conflict start, 47-65 in 2017) & 9,730 &  & Fully formed adults when conflict began\\
+6. Control cohort (age 26-40 at conflict start) & 9,730 &  & Fully formed adults when conflict began\\
 \textbf{7. MAIN ESTIMATION SAMPLE (Treatment + Control)} & \textbf{37,174} & \textbf{52,935} & \textbf{Used in balance table and all main regressions}\\
 \bottomrule
 \end{tabular}
@@ -35,7 +35,7 @@ Panel A: From raw data to cleaned sample &  &  \vphantom{1} & \\
 \item \textit{Notes:} 
 \item Starting sample: Nepal Labour Force Survey 2017/18 full individual roster (90,967 observations).
 \item Conflict exposure data from INSEC covering 1996-2006. District information required to merge conflict and survey data.
-\item Cohort definitions are based on age at conflict onset (1996): treatment = age 0-17, control = age 18-40. Current-age windows in 2017 (18-45 for treatment; 47-65 for control) ensure both cohorts are working-age adults at survey.
+\item Cohort definitions are based on age at conflict onset (1996): treatment = age 0-17, control = age 26-40. Ages 18-25 at conflict onset are excluded from the main analysis sample.
 \item Regressions that additionally control for education or occupation will have slightly smaller samples due to listwise deletion of missing covariates. The final analysis sample of 37,174 refers to the main (no additional controls) specification.
 \item Source: Nepal Labour Force Survey 2017/18; INSEC conflict database.
 \end{tablenotes}

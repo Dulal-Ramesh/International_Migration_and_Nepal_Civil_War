@@ -92,7 +92,7 @@ Speaker notes go here. They appear in presenter mode (press 'S' during the prese
 
 ## Sample construction
 
-![](../International_Migration_and_Nepal_Civil_War/Paper/Tables/Tables_Summary/2.Sample_Construction.html){width=100%}
+<iframe src="../Paper/Tables/Tables_Summary/2.Sample_Construction.html" width="100%" height="500" style="border: none;"></iframe>
 
 Final analysis sample: **37,174 individuals** in 75 districts.
 
@@ -158,7 +158,7 @@ Treatment is most plausibly exogenous *given* the FE — comparing siblings of e
 
 ## Table 6 — Means by cohort and conflict intensity
 
-![](../Paper/Tables/Tables_Summary/6.DiD_Two_Measures.html){width=100%}
+<iframe src="../Paper/Tables/Tables_Summary/6.DiD_Two_Measures.html" width="100%" height="520" style="border: none;"></iframe>
 
 ::: {.notes}
 Walk through one panel — say International Migrant — and show how the four corner means produce the DiD estimate of −4.8.
@@ -180,7 +180,7 @@ The pattern is consistent: childhood conflict exposure *suppresses* internationa
 
 ## Table 7a — International Migrant
 
-![](../Paper/Tables/Tables_Main/7a.DiD_Regression.html){width=100%}
+<iframe src="../Paper/Tables/Tables_Main/7a.DiD_Regression.html" width="100%" height="520" style="border: none;"></iframe>
 
 The coefficient is **stable across specifications** as we add demographic controls and fixed effects, supporting a causal interpretation.
 
@@ -210,7 +210,7 @@ The coefficient $\gamma_\ell$ traces out the **dose-response curve** across ages
 
 ## Event study figure: International Migration × Months of War
 
-![](../Paper/Figures/Figures_Main/8a_intl_migrant_months_event_study.png){fig-align="center" width=85%}
+![](../Paper/Figures/8a_intl_migrant_months_event_study.png){fig-align="center" width=85%}
 
 ::: {.notes}
 Two key things to point out:

@@ -13,12 +13,13 @@
 # PURPOSE:
 # Estimates the effect of
 # being in a high-conflict district on international migration, separately
-# for every age cohort (age in 1996, ranging 0-40 in nlss_analysis_sample).
+# for every age cohort in nlss_analysis_sample: treatment ages 0-17 and
+# control/placebo ages 26-40 in 1996.
 # The coefficients trace out the dose-response curve across childhood and
 # placebo ages.
 #
-# Reference age: 18 (just past childhood). All other coefficients are
-# interpreted as "effect relative to age 18".
+# Reference age: 26 (first control age). All other coefficients are
+# interpreted as "effect relative to age 26".
 
 
 cat("\n=== EVENT STUDY: International Migration x Months of War ===\n")
