@@ -2474,7 +2474,7 @@ generate_event_study_plot <- function(data,
                color = placebo_color, size = 1.2, show.legend = FALSE) +
     scale_shape_manual(values = c("FALSE" = 16, "TRUE" = 1)) +
     scale_x_continuous(
-      breaks = c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40),
+      breaks = c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40)
       )+
     labs(
       title    = paste0("Event Study: ", outcome_label, " by Age at Conflict Onset"),
@@ -2494,7 +2494,7 @@ generate_event_study_plot <- function(data,
       plot.subtitle    = element_text(color = "grey30", size = 11, hjust = 0.5),
       plot.caption     = element_text(color = "grey40", size = 9, hjust = 0),
       panel.grid.minor = element_blank(),
-      panel.grid.minor.x = element_blank(),
+      panel.grid.major.x = element_blank(),
       axis.line        = element_line(color = "grey50", linewidth = 0.4),  
       axis.ticks       = element_line(color = "grey50", linewidth = 0.4)
     )
