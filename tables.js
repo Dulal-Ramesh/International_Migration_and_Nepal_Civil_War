@@ -19,5 +19,6 @@ const TABLES = [
   { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7a — Main DiD: International Migrant", url: BASE + "Tables_Main/7a.DiD_Regression.html" },
   { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7b — Main DiD: Currently Abroad", url: BASE + "Tables_Main/7b.DiD_Regression.html" },
   { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7c — Main DiD: Return Migrant", url: BASE + "Tables_Main/7c.DiD_Regression.html" },
-  { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7d — Main DiD: Internal Migration", url: BASE + "Tables_Main/7d.DiD_Regression.html" }
+  { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7d — Main DiD: Internal Migration", url: BASE + "Tables_Main/7d.DiD_Regression.html" },
+  { section: "Regression Tables", subsection: "Event Study", title: "Table 8a — Event Study: International Migrant (Months of War)", url: BASE + "Tables_Main/8a_intl_migrant_months.Event_Study.html" }
 ];

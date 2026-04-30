@@ -2296,7 +2296,273 @@ generate_did_regression_table <- function(data,
 
 
 # ==============================================================================
-# SECTION 13: TABLES REGISTRY (for auto-generating tables.js)----
+# SECTION 13: EVENT STUDY PLOT (Figure 1) ----
+# ==============================================================================
+# Produces age-by-intensity event-study plot. Runs
+#
+#   Y = c + region FE + cohort FE +
+#       sum_{l != ref}( P_j * 1[age_at_conflict_start = l] ) * gamma_l + e
+#
+# and plots gamma_l on the y-axis against age-at-conflict-onset on the x-axis,
+# with 95% confidence intervals. The reference age (default 18) gets gamma = 0
+# by construction.
+#
+# What to look for in the resulting plot:
+#   - Coefficients near zero for ages > 17 (placebo region — cohorts not
+#     childhood-exposed should show no program effect)
+#   - Coefficients trending negative for ages 0-17 if the conflict suppresses
+#     migration (or positive if conflict promotes it)
+#   - The shape of the curve across ages 0-17 reveals which developmental
+#     window matters most (early childhood vs adolescence)
+#
+# Outputs:
+#   - Figure: figures_main/<file_label>_event_study.png
+#   - Coefficient table: tables_main/<file_label>_event_study.{tex,html}
+#   - Underlying CSV with age, coef, SE, lower, upper for transparency
+# ------------------------------------------------------------------------------
+
+generate_event_study_plot <- function(data,
+                                      outcome_var,
+                                      outcome_label,
+                                      conflict_var,
+                                      conflict_label,
+                                      age_var          = "age_at_conflict_start",
+                                      treatment_cutoff = 17,   # last "treated" age
+                                      ref_age          = 18,   # omitted reference
+                                      cluster_var      = "dist",
+                                      birthyear_var    = "age",  # FE for birth-year
+                                      scale            = 100,
+                                      file_label,
+                                      caption_label,
+                                      figure_dir,
+                                      table_dir) {
+  
+  cat("=== Event Study:", file_label,
+      "(", outcome_label, "x", conflict_label, ") ===\n")
+  
+  # --- Build the regression formula ---
+  # I(Y * scale) ~ i(age_at_conflict_start, conflict_var, ref = ref_age) | dist + age
+  fml <- as.formula(
+    paste0("I(", outcome_var, " * ", scale, ") ~ ",
+           "i(", age_var, ", ", conflict_var, ", ref = ", ref_age, ") | ",
+           cluster_var, " + ", birthyear_var)
+  )
+  
+  fit <- feols(fml, data = data,
+               cluster = as.formula(paste("~", cluster_var)),
+               warn = FALSE, notes = FALSE)
+  
+  # --- Extract coefficients ---
+  ct <- summary(fit)$coeftable
+  coef_names <- rownames(ct)
+  
+  # i() coefficients are named like "age_at_conflict_start::5:high_conflict_q3_binary"
+  # Extract the age value from each name with a regex
+  age_pattern <- paste0(age_var, "::([0-9]+):", conflict_var)
+  matched_idx <- grepl(age_pattern, coef_names)
+  
+  if (sum(matched_idx) == 0) {
+    stop("No matching i() coefficients found. Check that variable names are correct.")
+  }
+  
+  ages <- as.numeric(sub(age_pattern, "\\1", coef_names[matched_idx]))
+  
+  coef_df <- data.frame(
+    age   = ages,
+    coef  = ct[matched_idx, "Estimate"],
+    se    = ct[matched_idx, "Std. Error"],
+    pval  = ct[matched_idx, "Pr(>|t|)"],
+    stringsAsFactors = FALSE
+  )
+  
+  # Add reference-age row (coefficient = 0, no SE)
+  coef_df <- rbind(coef_df,
+                   data.frame(age = ref_age, coef = 0, se = NA, pval = NA))
+  coef_df <- coef_df[order(coef_df$age), ]
+  
+  # 95% confidence intervals
+  coef_df$lower <- coef_df$coef - 1.96 * coef_df$se
+  coef_df$upper <- coef_df$coef + 1.96 * coef_df$se
+  coef_df$is_treated <- coef_df$age <= treatment_cutoff
+  
+  # Significance stars (used in the table)
+  coef_df$stars <- with(coef_df, dplyr::case_when(
+    is.na(pval)   ~ "(ref)",
+    pval < 0.01  ~ "***",
+    pval < 0.05  ~ "**",
+    pval < 0.10  ~ "*",
+    TRUE          ~ ""
+  ))
+  
+  # --- Save underlying coefficients as CSV (for transparency / replication) ---
+  csv_path <- file.path(figure_dir, paste0(file_label, "_event_study_coefs.csv"))
+  write.csv(coef_df, csv_path, row.names = FALSE)
+  
+  # --- Build the figure ---
+  # Compute excluded-age range from the data: anything between the treatment
+  # cutoff and the smallest placebo age that's actually in the sample.
+  observed_ages <- sort(unique(coef_df$age))
+  excluded_min  <- treatment_cutoff + 1
+  excluded_max  <- min(observed_ages[observed_ages > treatment_cutoff]) - 1
+  has_gap       <- excluded_max >= excluded_min
+  
+  # Split the data into treated and placebo subsets so each gets its own
+  # ribbon and connecting line. ggplot's geom_ribbon won't span gaps if the
+  # data are split into separate groups.
+  coef_df$cohort <- ifelse(coef_df$age <= treatment_cutoff,
+                           "Childhood-exposed", "Placebo")
+  
+  treated_df <- coef_df[coef_df$age <= treatment_cutoff, ]
+  placebo_df <- coef_df[coef_df$age >  treatment_cutoff, ]
+  
+  treated_color <- "#7a7a7a"
+  placebo_color <- "#7a7a7a"
+  ribbon_alpha  <- 0.18
+  
+  p <- ggplot() +
+    # Light gray shaded band for the treated age range
+    annotate("rect", xmin = -Inf, xmax = treatment_cutoff + 0.5,
+             ymin = -Inf, ymax = Inf,
+             fill = "grey100", alpha = 0.6)
+  
+  # Hatched / shaded "Excluded from sample" band for the gap
+  if (has_gap) {
+    p <- p +
+      annotate("rect",
+               xmin = excluded_min - 0.5, xmax = excluded_max + 0.5,
+               ymin = -Inf, ymax = Inf,
+               fill = "grey85", alpha = 0.5) +
+      annotate("text",
+               x = (excluded_min + excluded_max) / 2,
+               y = Inf, vjust = 1.6,
+               label = paste0("Excluded\n(ages ", excluded_min, "\u2013",
+                              excluded_max, ")"),
+               size = 3.0, color = "grey10", fontface = "italic",
+               lineheight = 0.9)
+  }
+  
+  p <- p +
+    # Horizontal zero line
+    geom_hline(yintercept = 0, linetype = "dashed", color = "grey40") +
+    # Vertical line at the treatment cutoff
+    geom_vline(xintercept = treatment_cutoff + 0.5,
+               linetype = "dotted", color = "grey50") +
+    # Treated ribbon
+    geom_ribbon(data = treated_df,
+                aes(x = age, ymin = lower, ymax = upper),
+                fill = treated_color, alpha = ribbon_alpha) +
+    # Placebo ribbon (skip the reference point because it has no SE)
+    geom_ribbon(data = placebo_df[!is.na(placebo_df$se), ],
+                aes(x = age, ymin = lower, ymax = upper),
+                fill = placebo_color, alpha = ribbon_alpha) +
+    # Connecting line for treated cohort
+    geom_line(data = treated_df,
+              aes(x = age, y = coef),
+              color = treated_color, linewidth = 0.4) +
+    # Connecting line for placebo cohort
+    geom_line(data = placebo_df,
+              aes(x = age, y = coef),
+              color = placebo_color, linewidth = 0.4) +
+    # Points (treated)
+    geom_point(data = treated_df,
+               aes(x = age, y = coef),
+               color = treated_color, size = 1.2) +
+    # Points (placebo) — use a slightly different shape for the reference
+    geom_point(data = placebo_df,
+               aes(x = age, y = coef,
+                   shape = is.na(se)),
+               color = placebo_color, size = 1.2, show.legend = FALSE) +
+    scale_shape_manual(values = c("FALSE" = 16, "TRUE" = 1)) +
+    scale_x_continuous(
+      breaks = c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40),
+      )+
+    labs(
+      title    = paste0("Event Study: ", outcome_label, " by Age at Conflict Onset"),
+      subtitle = paste0("Conflict intensity measured by: ", conflict_label),
+      x        = "Age at conflict onset (1996)",
+      y        = paste0("Coefficient: \u03B3\u2097 (\u00D7 ", scale, ")"),
+      caption  = paste0("Coefficient = effect on ", outcome_label,
+                        " of high-conflict district relative to age ", ref_age,
+                        " baseline (open circle).\n",
+                        "Shaded ribbons: 95% confidence intervals (clustered at district level). ",
+                        "Light shaded region: childhood-exposed cohort (age 0\u2013", treatment_cutoff, ").")
+    ) +
+    theme_minimal(base_size = 11) +
+    theme(
+      legend.position  = "none",
+      plot.title       = element_text(face = "bold", size = 13, hjust = 0.5),
+      plot.subtitle    = element_text(color = "grey30", size = 11, hjust = 0.5),
+      plot.caption     = element_text(color = "grey40", size = 9, hjust = 0),
+      panel.grid.minor = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      axis.line        = element_line(color = "grey50", linewidth = 0.4),  
+      axis.ticks       = element_line(color = "grey50", linewidth = 0.4)
+    )
+  
+  fig_path <- file.path(figure_dir, paste0(file_label, "_event_study.png"))
+  ggsave(fig_path, plot = p, width = 9, height = 5.5, dpi = 200)
+  
+  # --- Build the coefficient table ---
+  tbl <- coef_df %>%
+    transmute(
+      Age       = age,
+      Coefficient = ifelse(is.na(se),
+                           "0 (ref)",
+                           paste0(sprintf("%.2f", coef), stars)),
+      `Std. Error` = ifelse(is.na(se), "", sprintf("(%.2f)", se)),
+      `95% CI`     = ifelse(is.na(se), "",
+                            paste0("[", sprintf("%.2f", lower), ", ",
+                                   sprintf("%.2f", upper), "]"))
+    )
+  
+  notes_text <- c(
+    paste0("Outcome: ", outcome_label, ", scaled by ", scale, "."),
+    paste0("Coefficients from feols(Y ~ i(age_at_conflict_start, ", conflict_var,
+           ", ref = ", ref_age, ") | dist + age) with district-clustered SEs."),
+    paste0("Age ", ref_age, " is the reference category (coefficient set to 0)."),
+    "Each row is the gamma_l coefficient — the effect of being in a high-conflict district for someone of that age in 1996, relative to the reference age.",
+    "Coefficients near zero for ages above the cutoff serve as a placebo / parallel-trends test.",
+    "*** p<0.01, ** p<0.05, * p<0.10.",
+    "Source: Nepal Labour Force Survey 2017/18; INSEC."
+  )
+  
+  # LaTeX
+  latex_out <- kable(tbl, format = "latex", booktabs = TRUE,
+                     caption   = paste0("Event Study Coefficients: ",
+                                        outcome_label, " (", caption_label, ")"),
+                     label     = paste0("event_study_", file_label),
+                     escape    = TRUE,
+                     align     = c("c", "c", "c", "c")) %>%
+    kable_styling(latex_options = c("hold_position"), font_size = 9) %>%
+    footnote(general = notes_text, general_title = "Notes:",
+             footnote_as_chunk = FALSE, threeparttable = TRUE, escape = FALSE)
+  
+  writeLines(as.character(latex_out),
+             file.path(table_dir, paste0(file_label, ".Event_Study.tex")))
+  
+  # HTML
+  html_out <- kable(tbl, format = "html",
+                    caption = paste0("Event Study Coefficients: ",
+                                     outcome_label, " (", caption_label, ")"),
+                    align = c("c", "c", "c", "c")) %>%
+    style_html_table(font_size = 13) %>%
+    column_spec(1, width = "6em") %>%
+    column_spec(2:4, width = "10em") %>%
+    footnote(general = notes_text, general_title = "Notes:",
+             footnote_as_chunk = FALSE)
+  
+  writeLines(as.character(html_out),
+             file.path(table_dir, paste0(file_label, ".Event_Study.html")))
+  
+  cat("=== Exported:", file_label,
+      "Event_Study figure (.png) + coefficients (.tex/.html/.csv) ===\n")
+  
+  invisible(list(fit = fit, coef_df = coef_df, plot = p))
+}
+
+
+# ==============================================================================
+# SECTION 14: TABLES REGISTRY (for auto-generating tables.js)----
 # ==============================================================================
 # Populated by register_table() calls inside each table script, right after
 # writeLines(...) for the HTML output. At the end of 00_master.R, we write
