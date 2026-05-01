@@ -2532,7 +2532,8 @@ generate_event_study_plot <- function(data,
                                         outcome_label, " (", caption_label, ")"),
                      label     = paste0("event_study_", file_label),
                      escape    = TRUE,
-                     align     = c("c", "c", "c", "c")) %>%
+                     align     = c("c", "c", "c", "c"),
+                     row.names = FALSE) %>%
     kable_styling(latex_options = c("hold_position"), font_size = 9) %>%
     footnote(general = notes_text, general_title = "Notes:",
              footnote_as_chunk = FALSE, threeparttable = TRUE, escape = FALSE)
@@ -2544,7 +2545,8 @@ generate_event_study_plot <- function(data,
   html_out <- kable(tbl, format = "html",
                     caption = paste0("Event Study Coefficients: ",
                                      outcome_label, " (", caption_label, ")"),
-                    align = c("c", "c", "c", "c")) %>%
+                    align = c("c", "c", "c", "c"),
+                    row.names = FALSE)%>%
     style_html_table(font_size = 13) %>%
     column_spec(1, width = "6em") %>%
     column_spec(2:4, width = "10em") %>%
