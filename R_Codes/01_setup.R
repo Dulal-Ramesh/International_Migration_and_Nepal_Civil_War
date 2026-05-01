@@ -2564,6 +2564,279 @@ generate_event_study_plot <- function(data,
 
 
 # ==============================================================================
+# SECTION 14: SUB-COHORT DiD REGRESSION TABLE GENERATOR ----
+# ==============================================================================
+# Estimates the main DiD specification (Equation 1) separately for three
+# childhood sub-cohorts:
+#   - Early childhood (0-5 at conflict onset)
+#   - Middle childhood (6-11 at conflict onset)
+#   - Adolescence (12-17 at conflict onset)
+#
+# Each sub-cohort is compared against the SAME control group (ages 26-40
+# at conflict onset, currently 47-61 in 2017). The sub-cohort indicator
+# replaces the binary treatment indicator in Equation 1.
+#
+# Output structure (per outcome × measure combination):
+#   - Three DiD coefficients (one per sub-cohort)
+#   - Each from a separate feols() call on a sub-sample
+#   - Standard errors clustered at district level
+#   - Demographic controls + district FE + age FE
+#
+# Final table: cohorts as columns, panels for each conflict measure.
+# ------------------------------------------------------------------------------
+
+# Helper: fit one sub-cohort DiD regression on a filtered sample
+# Filters on cohort_short variable directly (which already encodes the
+# bracket structure: T: 0-5 / T: 6-12 / T: 13-17 for treatment;
+# C: 26-35 / C: 36-40 for control).
+fit_subcohort_did <- function(data, outcome_var, conflict_var,
+                              treated_label, control_labels,
+                              cohort_var, cluster_var, age_var,
+                              scale, controls_text) {
+  
+  # Build the sub-sample: this treated sub-cohort + ALL control cohorts
+  sub_data <- data[data[[cohort_var]] %in% c(treated_label, control_labels), ]
+  
+  # Define the binary treatment indicator within this sub-sample
+  sub_data$T_subcohort <- as.integer(sub_data[[cohort_var]] == treated_label)
+  
+  # Build the formula:
+  # Y * scale ~ HC * T_subcohort + controls | dist + age
+  fml <- as.formula(
+    paste0("I(", outcome_var, " * ", scale, ") ~ ",
+           conflict_var, " * T_subcohort",
+           if (nchar(controls_text)) paste0(" + ", controls_text) else "",
+           " | ", cluster_var, " + ", age_var)
+  )
+  
+  fit <- feols(fml, data = sub_data,
+               cluster = as.formula(paste("~", cluster_var)),
+               warn = FALSE, notes = FALSE)
+  
+  # Extract the DiD coefficient
+  ct <- summary(fit)$coeftable
+  did_row <- grep(paste0(conflict_var, ".*T_subcohort|T_subcohort.*", conflict_var),
+                  rownames(ct))
+  
+  if (length(did_row) == 0) {
+    stop("Could not find DiD interaction term in the regression output. ",
+         "Check variable names.")
+  }
+  
+  coef_val <- ct[did_row, "Estimate"]
+  se_val   <- ct[did_row, "Std. Error"]
+  pval     <- ct[did_row, "Pr(>|t|)"]
+  n_obs    <- nobs(fit)
+  
+  # Format
+  stars <- dplyr::case_when(
+    pval < 0.01  ~ "***",
+    pval < 0.05  ~ "**",
+    pval < 0.10  ~ "*",
+    TRUE          ~ ""
+  )
+  
+  list(
+    coef_str = paste0(sprintf("%.2f", coef_val), stars),
+    se_str   = sprintf("(%.2f)", se_val),
+    n        = n_obs,
+    fit      = fit
+  )
+}
+
+
+generate_subcohort_did_table <- function(data,
+                                         outcome_var,
+                                         outcome_label,
+                                         conflict_vars,
+                                         conflict_panel_labels,
+                                         cohort_var       = "cohort_short",
+                                         treated_labels   = c("T: 0-5",
+                                                              "T: 6-12",
+                                                              "T: 13-17"),
+                                         control_labels   = c("C: 26-35",
+                                                              "C: 36-40"),
+                                         cohort_col_labels = c(
+                                           "Early childhood\n(ages 0–5)",
+                                           "Middle childhood\n(ages 6–12)",
+                                           "Adolescence\n(ages 13–17)"
+                                         ),
+                                         age_var          = "age",
+                                         cluster_var      = "dist",
+                                         controls         = c("sex", "ethnicity_group",
+                                                              "education_yrs"),
+                                         scale            = 100,
+                                         file_label,
+                                         caption_label,
+                                         output_dir) {
+  
+  cat("=== Sub-Cohort DiD:", file_label,
+      "(", outcome_label, ") ===\n")
+  
+  # Verify the cohort variable exists
+  if (!cohort_var %in% names(data)) {
+    stop("Cohort variable '", cohort_var, "' not found in data.")
+  }
+  
+  # Verify treated and control labels exist in the data
+  observed_labels <- unique(data[[cohort_var]])
+  missing_treated <- setdiff(treated_labels, observed_labels)
+  missing_control <- setdiff(control_labels, observed_labels)
+  
+  if (length(missing_treated) > 0) {
+    stop("Treated cohort labels not found in data: ",
+         paste(missing_treated, collapse = ", "),
+         "\nObserved: ", paste(observed_labels, collapse = ", "))
+  }
+  if (length(missing_control) > 0) {
+    stop("Control cohort labels not found in data: ",
+         paste(missing_control, collapse = ", "),
+         "\nObserved: ", paste(observed_labels, collapse = ", "))
+  }
+  
+  # Filter controls to only those present in the data
+  controls_present <- intersect(controls, names(data))
+  controls_text    <- paste(controls_present, collapse = " + ")
+  
+  # ── Loop over conflict measures (panels) ──────────────────────────────── #
+  panel_rows <- list()
+  
+  for (m in seq_along(conflict_vars)) {
+    cvar  <- conflict_vars[m]
+    plabel <- conflict_panel_labels[m]
+    
+    # ── Loop over treated sub-cohorts (columns within panel) ────────────── #
+    coef_cells <- character(length(treated_labels))
+    se_cells   <- character(length(treated_labels))
+    n_cells    <- integer(length(treated_labels))
+    
+    for (k in seq_along(treated_labels)) {
+      tlabel <- treated_labels[k]
+      cat("  Panel", LETTERS[m], "Cohort '", tlabel, "' ...\n")
+      
+      res <- fit_subcohort_did(
+        data           = data,
+        outcome_var    = outcome_var,
+        conflict_var   = cvar,
+        treated_label  = tlabel,
+        control_labels = control_labels,
+        cohort_var     = cohort_var,
+        age_var        = age_var,
+        cluster_var    = cluster_var,
+        scale          = scale,
+        controls_text  = controls_text
+      )
+      
+      coef_cells[k] <- res$coef_str
+      se_cells[k]   <- res$se_str
+      n_cells[k]    <- res$n
+    }
+    
+    panel_rows[[m]] <- list(
+      label       = plabel,
+      coef_row    = c("HC × Sub-Cohort", coef_cells),
+      se_row      = c("",                se_cells),
+      n_row       = c("Observations",    format(n_cells, big.mark = ","))
+    )
+  }
+  
+  # ── Build the table data frame ────────────────────────────────────────── #
+  col_names <- c(" ", cohort_col_labels)
+  
+  rows <- list()
+  for (m in seq_along(panel_rows)) {
+    pr <- panel_rows[[m]]
+    rows[[length(rows) + 1]] <- pr$coef_row
+    rows[[length(rows) + 1]] <- pr$se_row
+    rows[[length(rows) + 1]] <- pr$n_row
+  }
+  
+  tbl <- as.data.frame(do.call(rbind, rows), stringsAsFactors = FALSE)
+  colnames(tbl) <- col_names
+  
+  # ── Pack-rows definitions for kable: panel groupings ──────────────────── #
+  pack_def <- list()
+  for (m in seq_along(panel_rows)) {
+    start_idx <- (m - 1) * 3 + 1
+    end_idx   <- m * 3
+    pack_def[[panel_rows[[m]]$label]] <- c(start_idx, end_idx)
+  }
+  
+  # ── Notes ─────────────────────────────────────────────────────────────── #
+  notes_text <- c(
+    paste0("Outcome: ", outcome_label, ", scaled by ", scale, "."),
+    paste0("Each cell reports the DiD coefficient (HC \u00D7 Sub-Cohort) ",
+           "from a separate regression."),
+    paste0("Control group is held constant: pooled individuals aged 26\u201340 ",
+           "at conflict onset (",
+           paste(control_labels, collapse = " + "),
+           "; currently 47\u201361 in 2017)."),
+    paste0("All specifications include district fixed effects, age fixed effects, ",
+           "and demographic controls (", paste(controls_present, collapse = ", "), ")."),
+    "Standard errors in parentheses, clustered at district level.",
+    "*** p<0.01, ** p<0.05, * p<0.10.",
+    "Source: Nepal Labour Force Survey 2017/18; INSEC."
+  )
+  
+  # ── LaTeX output ──────────────────────────────────────────────────────── #
+  latex_out <- kable(tbl, format = "latex", booktabs = TRUE,
+                     caption   = paste0("Sub-Cohort DiD: ", outcome_label,
+                                        " (", caption_label, ")"),
+                     label     = paste0("subcohort_did_", file_label),
+                     escape    = TRUE,
+                     align     = c("l", "c", "c", "c"),
+                     row.names = FALSE) %>%
+    kable_styling(latex_options = c("hold_position"), font_size = 9)
+  
+  # Apply panel groupings
+  for (panel_name in names(pack_def)) {
+    rng <- pack_def[[panel_name]]
+    latex_out <- latex_out %>%
+      pack_rows(panel_name, rng[1], rng[2], escape = FALSE,
+                latex_gap_space = "0.6em")
+  }
+  
+  latex_out <- latex_out %>%
+    footnote(general = notes_text, general_title = "Notes:",
+             footnote_as_chunk = FALSE, threeparttable = TRUE, escape = FALSE)
+  
+  writeLines(as.character(latex_out),
+             file.path(output_dir, paste0(file_label, ".SubCohort_DiD.tex")))
+  
+  # ── HTML output ───────────────────────────────────────────────────────── #
+  # Convert \n to <br> for proper HTML rendering
+  col_names_html <- gsub("\n", "<br>", col_names, fixed = TRUE)
+  colnames(tbl) <- col_names_html
+  
+  html_out <- kable(tbl, format = "html", escape = FALSE,
+                    caption = paste0("Sub-Cohort DiD: ", outcome_label,
+                                     " (", caption_label, ")"),
+                    align   = c("l", "c", "c", "c"),
+                    row.names = FALSE) %>%
+    style_html_table(font_size = 13)
+  
+  for (panel_name in names(pack_def)) {
+    rng <- pack_def[[panel_name]]
+    html_out <- html_out %>%
+      pack_rows(panel_name, rng[1], rng[2], escape = FALSE)
+  }
+  
+  html_out <- html_out %>%
+    column_spec(1, width = "12em") %>%
+    column_spec(2:4, width = "10em") %>%
+    footnote(general = notes_text, general_title = "Notes:",
+             footnote_as_chunk = FALSE)
+  
+  writeLines(as.character(html_out),
+             file.path(output_dir, paste0(file_label, ".SubCohort_DiD.html")))
+  
+  cat("=== Exported:", file_label, "SubCohort_DiD (.tex/.html) ===\n")
+  
+  invisible(tbl)
+}
+
+
+# ==============================================================================
 # SECTION 14: TABLES REGISTRY (for auto-generating tables.js)----
 # ==============================================================================
 # Populated by register_table() calls inside each table script, right after

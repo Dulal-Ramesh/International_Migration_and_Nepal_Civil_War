@@ -16,10 +16,6 @@ const TABLES = [
   { section: "Difference Tables", subsection: "Based on Casualty Number", title: "Table 5c — High vs Low Conflict (Age 6–12)", url: BASE + "Tables_Summary/5c.Conflict_DiD_Table.html" },
   { section: "Difference Tables", subsection: "Based on Casualty Number", title: "Table 5d — High vs Low Conflict (Age 13–17)", url: BASE + "Tables_Summary/5d.Conflict_DiD_Table.html" },
   { section: "Difference Tables", subsection: "DiD Means (Two Measures)", title: "Table 6 — DiD Means by Cohort and Conflict Intensity", url: BASE + "Tables_Summary/6.DiD_Two_Measures.html" },
-  { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7a — Main DiD: International Migrant", url: BASE + "Tables_Main/7a.DiD_Regression.html" },
-  { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7b — Main DiD: Currently Abroad", url: BASE + "Tables_Main/7b.DiD_Regression.html" },
-  { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7c — Main DiD: Return Migrant", url: BASE + "Tables_Main/7c.DiD_Regression.html" },
-  { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7d — Main DiD: Internal Migration", url: BASE + "Tables_Main/7d.DiD_Regression.html" },
   { section: "Regression Tables", subsection: "Event Study", title: "Table 8a — Event Study: International Migrant (Months of War)", url: BASE + "Tables_Main/8a_intl_migrant_months.Event_Study.html" },
   { section: "Regression Tables", subsection: "Event Study", title: "Table 8a — Event Study: International Migrant (Casualties)", url: BASE + "Tables_Main/8a_intl_migrant_casualties.Event_Study.html" },
   { section: "Regression Tables", subsection: "Event Study", title: "Table 8b — Event Study: Currently Abroad (Months of War)", url: BASE + "Tables_Main/8b_currently_abroad_months.Event_Study.html" },
@@ -27,5 +23,13 @@ const TABLES = [
   { section: "Regression Tables", subsection: "Event Study", title: "Table 8c — Event Study: Return Migrant (Months of War)", url: BASE + "Tables_Main/8c_return_migrant_months.Event_Study.html" },
   { section: "Regression Tables", subsection: "Event Study", title: "Table 8c — Event Study: Return Migrant (Casualties)", url: BASE + "Tables_Main/8c_return_migrant_casualties.Event_Study.html" },
   { section: "Regression Tables", subsection: "Event Study", title: "Table 8d — Event Study: Internal Migration (Months of War)", url: BASE + "Tables_Main/8d_internal_migration_months.Event_Study.html" },
-  { section: "Regression Tables", subsection: "Event Study", title: "Table 8d — Event Study: Internal Migration (Casualties)", url: BASE + "Tables_Main/8d_internal_migration_casualties.Event_Study.html" }
+  { section: "Regression Tables", subsection: "Event Study", title: "Table 8d — Event Study: Internal Migration (Casualties)", url: BASE + "Tables_Main/8d_internal_migration_casualties.Event_Study.html" },
+  { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7a — Main DiD: International Migrant", url: BASE + "Tables_Main/7a.DiD_Regression.html" },
+  { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7b — Main DiD: Currently Abroad", url: BASE + "Tables_Main/7b.DiD_Regression.html" },
+  { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7c — Main DiD: Return Migrant", url: BASE + "Tables_Main/7c.DiD_Regression.html" },
+  { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7d — Main DiD: Internal Migration", url: BASE + "Tables_Main/7d.DiD_Regression.html" },
+  { section: "Regression Tables", subsection: "Sub-Cohort DiD", title: "Table 9a — Sub-Cohort DiD: International Migrant", url: BASE + "Tables_Main/9a.SubCohort_DiD.html" },
+  { section: "Regression Tables", subsection: "Sub-Cohort DiD", title: "Table 9b — Sub-Cohort DiD: Currently Abroad", url: BASE + "Tables_Main/9b.SubCohort_DiD.html" },
+  { section: "Regression Tables", subsection: "Sub-Cohort DiD", title: "Table 9c — Sub-Cohort DiD: Return Migrant", url: BASE + "Tables_Main/9c.SubCohort_DiD.html" },
+  { section: "Regression Tables", subsection: "Sub-Cohort DiD", title: "Table 9d — Sub-Cohort DiD: Internal Migration", url: BASE + "Tables_Main/9d.SubCohort_DiD.html" }
 ];
