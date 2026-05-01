@@ -20,5 +20,12 @@ const TABLES = [
   { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7b — Main DiD: Currently Abroad", url: BASE + "Tables_Main/7b.DiD_Regression.html" },
   { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7c — Main DiD: Return Migrant", url: BASE + "Tables_Main/7c.DiD_Regression.html" },
   { section: "Regression Tables", subsection: "Main DiD Specification", title: "Table 7d — Main DiD: Internal Migration", url: BASE + "Tables_Main/7d.DiD_Regression.html" },
-  { section: "Regression Tables", subsection: "Event Study", title: "Table 8a — Event Study: International Migrant (Months of War)", url: BASE + "Tables_Main/8a_intl_migrant_months.Event_Study.html" }
+  { section: "Regression Tables", subsection: "Event Study", title: "Table 8a — Event Study: International Migrant (Months of War)", url: BASE + "Tables_Main/8a_intl_migrant_months.Event_Study.html" },
+  { section: "Regression Tables", subsection: "Event Study", title: "Table 8a — Event Study: International Migrant (Casualties)", url: BASE + "Tables_Main/8a_intl_migrant_casualties.Event_Study.html" },
+  { section: "Regression Tables", subsection: "Event Study", title: "Table 8b — Event Study: Currently Abroad (Months of War)", url: BASE + "Tables_Main/8b_currently_abroad_months.Event_Study.html" },
+  { section: "Regression Tables", subsection: "Event Study", title: "Table 8b — Event Study: Currently Abroad (Casualties)", url: BASE + "Tables_Main/8b_currently_abroad_casualties.Event_Study.html" },
+  { section: "Regression Tables", subsection: "Event Study", title: "Table 8c — Event Study: Return Migrant (Months of War)", url: BASE + "Tables_Main/8c_return_migrant_months.Event_Study.html" },
+  { section: "Regression Tables", subsection: "Event Study", title: "Table 8c — Event Study: Return Migrant (Casualties)", url: BASE + "Tables_Main/8c_return_migrant_casualties.Event_Study.html" },
+  { section: "Regression Tables", subsection: "Event Study", title: "Table 8d — Event Study: Internal Migration (Months of War)", url: BASE + "Tables_Main/8d_internal_migration_months.Event_Study.html" },
+  { section: "Regression Tables", subsection: "Event Study", title: "Table 8d — Event Study: Internal Migration (Casualties)", url: BASE + "Tables_Main/8d_internal_migration_casualties.Event_Study.html" }
 ];
