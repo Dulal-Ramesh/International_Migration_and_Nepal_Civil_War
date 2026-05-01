@@ -180,8 +180,17 @@ The pattern is consistent: childhood conflict exposure *suppresses* internationa
 
 ## Table 7a — International Migrant
 
-<iframe src="../Paper/Tables/Tables_Main/7a.DiD_Regression.html" width="100%" height="520" style="border: none;"></iframe>
-
+```{r, echo=FALSE, results='asis'}
+htmltools::HTML(
+  paste(
+    readLines("../Paper/Tables/Tables_Main/7a.DiD_Regression.html", encoding = "UTF-8"),
+    collapse = "\n"
+  )
+)
+```
+<!-- In order to comment under Quarto
+ <iframe src="../Paper/Tables/Tables_Main/7a.DiD_Regression.html" width="100%" height="520" style="border: none;"></iframe> 
+-->
 The coefficient is **stable across specifications** as we add demographic controls and fixed effects, supporting a causal interpretation.
 
 ## Stable across specifications, stable across measures
@@ -195,6 +204,12 @@ This stability is reassuring — the coefficient isn't being driven by any one s
 
 ## Sub-Cohort Impacts
 
+```{r, echo=FALSE, results='asis'}
+cat(readLines ("../Paper/Tables/Tables_Main/9a.SubCohort_DiD.html", encoding = "UTF-8"),
+    sep = "\n")
+```
+
+cat(readLines(../Paper/Tables/Tables_Main/9a.SubCohort_DiD.html, encoding = "UTF-8"), sep = "\n")
 
 # Event Study Evidence {.section-title}
 

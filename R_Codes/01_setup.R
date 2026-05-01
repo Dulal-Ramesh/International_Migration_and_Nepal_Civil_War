@@ -2827,8 +2827,13 @@ generate_subcohort_did_table <- function(data,
     footnote(general = notes_text, general_title = "Notes:",
              footnote_as_chunk = FALSE)
   
-  writeLines(as.character(html_out),
-             file.path(output_dir, paste0(file_label, ".SubCohort_DiD.html")))
+  
+  writeLines(
+    paste0('<meta charset="UTF-8">\n', as.character(html_out)),
+    file.path(output_dir, paste0(file_label, ".SubCohort_DiD.html")),
+    useBytes = TRUE
+  )
+  
   
   cat("=== Exported:", file_label, "SubCohort_DiD (.tex/.html) ===\n")
   
