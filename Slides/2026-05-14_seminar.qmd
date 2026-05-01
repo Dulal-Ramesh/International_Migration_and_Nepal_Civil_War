@@ -133,16 +133,16 @@ Mention the deliberate exclusion of ages 18–25 at conflict onset.
 
 ## Difference-in-differences design
 
-For individual $i$ in district $j$ in birth cohort $k$:
+For individual $i$ in district $d$ of age $k$:
 
 $$
-Y_{ijk} = \alpha + \beta_1 T_i + \beta_2 P_j + \beta_3 (T_i \times P_j) + \mathbf{X}_i'\gamma + \delta_d + \tau_a + \varepsilon_{ijk}
+Y_{idk} = c_{1} + \alpha_{d} + \beta_{k} + (P_d \times T_i)\gamma + \mathbf{X}_i' \delta  + \varepsilon_{idk}
 $$
 
 - $T_i$ = 1 if individual was 0–17 at conflict onset (treatment cohort)
-- $P_j$ = 1 if district above the conflict-intensity threshold
-- $\delta_d$ = district fixed effects; $\tau_a$ = age fixed effects
-- $\beta_3$ is the **DiD coefficient** of interest
+- $P_d$ = 1 if district above the conflict-intensity threshold (above 75^th^ percentile) 
+- $\alpha_d$ = district fixed effects; $\beta_k$ = age fixed effects
+- $\gamma$ is the **DiD coefficient** of interest
 - Standard errors clustered at the district level
 
 ## Identification builds on Duflo (2001)
@@ -192,6 +192,9 @@ Adding district FE, age FE, and demographic controls **strengthens** the estimat
 - Column (4) full specification: −5.04***
 
 This stability is reassuring — the coefficient isn't being driven by any one source of variation.
+
+## Sub-Cohort Impacts
+
 
 # Event Study Evidence {.section-title}
 
