@@ -61,8 +61,8 @@ es_8a_months <- generate_event_study_plot(
 )
 
 register_table(
-  section    = "Regression Tables",
-  subsection = "Event Study",
+  section    = "Event Study",
+  subsection = "",
   title      = "Table 8a — Event Study: International Migrant (Months of War)",
   file       = "Tables_Main/8a_intl_migrant_months.Event_Study.html"
 )
@@ -87,8 +87,8 @@ es_8a_casualties <- generate_event_study_plot(
 )
 
 register_table(
-  section    = "Regression Tables",
-  subsection = "Event Study",
+  section    = "Event Study",
+  subsection = "",
   title      = "Table 8a — Event Study: International Migrant (Casualties)",
   file       = "Tables_Main/8a_intl_migrant_casualties.Event_Study.html"
 )
@@ -118,8 +118,8 @@ es_8b_months <- generate_event_study_plot(
 )
 
 register_table(
-  section    = "Regression Tables",
-  subsection = "Event Study",
+  section    = "Event Study",
+  subsection = "",
   title      = "Table 8b — Event Study: Currently Abroad (Months of War)",
   file       = "Tables_Main/8b_currently_abroad_months.Event_Study.html"
 )
@@ -144,8 +144,8 @@ es_8b_casualties <- generate_event_study_plot(
 )
 
 register_table(
-  section    = "Regression Tables",
-  subsection = "Event Study",
+  section    = "Event Study",
+  subsection = "",
   title      = "Table 8b — Event Study: Currently Abroad (Casualties)",
   file       = "Tables_Main/8b_currently_abroad_casualties.Event_Study.html"
 )
@@ -175,8 +175,8 @@ es_8c_months <- generate_event_study_plot(
 )
 
 register_table(
-  section    = "Regression Tables",
-  subsection = "Event Study",
+  section    = "Event Study",
+  subsection = "",
   title      = "Table 8c — Event Study: Return Migrant (Months of War)",
   file       = "Tables_Main/8c_return_migrant_months.Event_Study.html"
 )
@@ -201,8 +201,8 @@ es_8c_casualties <- generate_event_study_plot(
 )
 
 register_table(
-  section    = "Regression Tables",
-  subsection = "Event Study",
+  section    = "Event Study",
+  subsection = "",
   title      = "Table 8c — Event Study: Return Migrant (Casualties)",
   file       = "Tables_Main/8c_return_migrant_casualties.Event_Study.html"
 )
@@ -232,8 +232,8 @@ es_8d_months <- generate_event_study_plot(
 )
 
 register_table(
-  section    = "Regression Tables",
-  subsection = "Event Study",
+  section    = "Event Study",
+  subsection = "",
   title      = "Table 8d — Event Study: Internal Migration (Months of War)",
   file       = "Tables_Main/8d_internal_migration_months.Event_Study.html"
 )
@@ -258,8 +258,8 @@ es_8d_casualties <- generate_event_study_plot(
 )
 
 register_table(
-  section    = "Regression Tables",
-  subsection = "Event Study",
+  section    = "Event Study",
+  subsection = "",
   title      = "Table 8d — Event Study: Internal Migration (Casualties)",
   file       = "Tables_Main/8d_internal_migration_casualties.Event_Study.html"
 )
