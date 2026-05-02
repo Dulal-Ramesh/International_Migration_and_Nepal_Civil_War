@@ -572,8 +572,11 @@ generate_balance_table <- function(data,
   
   # ---- EDIT (2026-04): Replaced save_kable() with writeLines() — save_kable
   # for HTML can still invoke webshot2 for rendering checks, which we don't need.
-  writeLines(as.character(html_out),
-             file.path(output_dir, paste0(file_label, ".Balance_Table.html")))
+  writeLines(
+    paste0('<meta charset="UTF-8">\n', as.character(html_out)),
+    file.path(output_dir, paste0(file_label, ".Balance_Table.html")),
+    useBytes = TRUE
+  )
   
   cat("=== Exported:", file_label, "(.tex / .html) ===\n")
 }
@@ -856,8 +859,11 @@ generate_conflict_did_table <- function(data,
     column_spec(2:7, width = "6em") %>%
     footnote(general = footnote_text_html, footnote_as_chunk = FALSE)
   
-  writeLines(as.character(html_out),
-             file.path(output_dir, paste0(file_label, ".Conflict_DiD_Table.html")))
+  writeLines(
+    paste0('<meta charset="UTF-8">\n', as.character(html_out)),
+    file.path(output_dir, paste0(file_label, ".Conflict_DiD_Table.html")),
+    useBytes = TRUE
+  )
   
   cat("=== Exported:", file_label, "Conflict_DiD_Table (.tex / .html) ===\n")
 }
@@ -1437,8 +1443,11 @@ generate_balance_table <- function(data,
   
   # ---- EDIT (2026-04): Replaced save_kable() with writeLines() — save_kable
   # for HTML can still invoke webshot2 for rendering checks, which we don't need.
-  writeLines(as.character(html_out),
-             file.path(output_dir, paste0(file_label, ".Balance_Table.html")))
+  writeLines(
+    paste0('<meta charset="UTF-8">\n', as.character(html_out)),
+    file.path(output_dir, paste0(file_label, ".Balance_Table.html")),
+    useBytes = TRUE
+  )
   
   cat("=== Exported:", file_label, "(.tex / .html) ===\n")
 }
@@ -1721,8 +1730,11 @@ generate_conflict_did_table <- function(data,
     column_spec(2:7, width = "6em") %>%
     footnote(general = footnote_text_html, footnote_as_chunk = TRUE)
   
-  writeLines(as.character(html_out),
-             file.path(output_dir, paste0(file_label, ".Conflict_DiD_Table.html")))
+  writeLines(
+    paste0('<meta charset="UTF-8">\n', as.character(html_out)),
+    file.path(output_dir, paste0(file_label, ".Conflict_DiD_Table.html")),
+    useBytes = TRUE
+  )
   
   cat("=== Exported:", file_label, "Conflict_DiD_Table (.tex / .html) ===\n")
 }
@@ -2038,8 +2050,11 @@ generate_did_two_measures_table <- function(data,
     footnote(general = footnote_text_html, general_title = "Notes:",
              footnote_as_chunk = FALSE)
   
-  writeLines(as.character(html_out),
-             file.path(output_dir, paste0(file_label, ".DiD_Two_Measures.html")))
+  writeLines(
+    paste0('<meta charset="UTF-8">\n', as.character(html_out)),
+    file.path(output_dir, paste0(file_label, ".DiD_Two_Measures.html")),
+    useBytes = TRUE
+  )
   
   cat("=== Exported:", file_label, "DiD_Two_Measures (.tex / .html) ===\n")
 }
@@ -2288,8 +2303,11 @@ generate_did_regression_table <- function(data,
     footnote(general = footnote_text_html, general_title = "Notes:",
              footnote_as_chunk = FALSE)
   
-  writeLines(as.character(html_out),
-             file.path(output_dir, paste0(file_label, ".DiD_Regression.html")))
+  writeLines(
+    paste0('<meta charset="UTF-8">\n', as.character(html_out)),
+    file.path(output_dir, paste0(file_label, ".DiD_Regression.html")),
+    useBytes = TRUE
+  )
   
   cat("=== Exported:", file_label, "DiD_Regression (.tex / .html) ===\n")
 }
@@ -2475,7 +2493,7 @@ generate_event_study_plot <- function(data,
     scale_shape_manual(values = c("FALSE" = 16, "TRUE" = 1)) +
     scale_x_continuous(
       breaks = c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40)
-      )+
+    )+
     labs(
       title    = paste0("Event Study: ", outcome_label, " by Age at Conflict Onset"),
       subtitle = paste0("Conflict intensity measured by: ", conflict_label),
@@ -2553,8 +2571,11 @@ generate_event_study_plot <- function(data,
     footnote(general = notes_text, general_title = "Notes:",
              footnote_as_chunk = FALSE)
   
-  writeLines(as.character(html_out),
-             file.path(table_dir, paste0(file_label, ".Event_Study.html")))
+  writeLines(
+    paste0('<meta charset="UTF-8">\n', as.character(html_out)),
+    file.path(table_dir, paste0(file_label, ".Event_Study.html")),
+    useBytes = TRUE
+  )
   
   cat("=== Exported:", file_label,
       "Event_Study figure (.png) + coefficients (.tex/.html/.csv) ===\n")
