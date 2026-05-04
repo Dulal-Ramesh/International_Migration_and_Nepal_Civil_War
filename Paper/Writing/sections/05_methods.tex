@@ -1,5 +1,22 @@
 \label{sec:methods}
 
+
+
+\drghosh{\textbf{Equation (1) details.} (a) define c\_1 (constant); (b) typo: 'standart'  to  'standard'; (c) gamma should be hat-gamma in the discussion of the estimate vs. estimand; (d) state the estimand: 'gamma is the effect on Y of being in a high-conflict district AND being in the childhood cohort, relative to the (low-conflict, adult) baseline.'}
+
+
+
+\drghosh{\textbf{Controls and post-treatment bias.} Education and occupation are themselves potentially affected by childhood conflict exposure. Including them as controls would absorb part of your effect (post-treatment bias). Show results in three nested specifications: (1) no controls beyond FE, (2) + sex and ethnicity (pre-determined), (3) + education + occupation (post-treatment, as sensitivity). Lead with spec (2).}
+
+
+
+
+\drghosh{\textbf{Identifying assumption.} Add a paragraph titled 'Identifying assumption' or 'Assumption 1': absent the Maoist conflict, migration outcomes of the childhood and adult cohorts would have evolved in parallel between high- and low-conflict districts. Then list FOUR things that could violate it: (i) differential pre-conflict migration trends by district type; (ii) differential post-2006 development policy targeting high-conflict districts (Maoist-area programs); (iii) differential India-Nepal border policy effects; (iv) cohort-specific shocks (e.g., 2015 earthquake in 14 districts). Address each.}
+
+
+
+\drghosh{\textbf{Cluster inference.} 75 districts is above the rule-of-thumb threshold (>30) but high-conflict districts are spatially clustered. Add wild cluster bootstrap (Cameron-Gelbach-Miller) and randomization inference (permute the high-conflict label across districts) as robustness. Cite MacKinnon \& Webb on inference with few clusters.}
+
 Following \cite{10.1257/aer.91.4.795}, we estimate:
 \begin{equation}
 Y_{idk} = c_{1} + \alpha_{d} + \beta_{k} + (P_d \times T_i)\gamma + \mathbf{X}_i' \delta  + \varepsilon_{idk}
@@ -16,17 +33,81 @@ To examine how the effect of conflict exposure varies across cohorts, and to ass
 Y_{idk} = c_{2} + \alpha_{d} + \beta_{k} + \sum_{\ell = 0}^{40}\bigl(P_d \times \mathbf{1}[A_i = \ell]\bigr)\gamma_{\ell} + \mathbf{X}_i' \delta + \varepsilon_{idk}
 \label{eq:event_study}
 \end{equation}
+
+
+\drghosh{\textbf{Reference age and identification.} Reference age = 26 (youngest of control). Make sure exactly ONE age dummy is omitted, otherwise you'll have a singularity. Also: why not omit the average across ALL adult ages 26–40 (de Chaisemartin–D'Haultfoeuille style)? This makes interpretation cleaner: 'average effect on cohorts aged ell relative to the average adult cohort.'}
+
 where $A_i$ denotes the age of individual $i$ when conflict started (1996) and $\mathbf{1}[\cdot]$ is the indicator function. The reference age is $r = 26$, the youngest age in the control cohort. Each coefficient $\gamma_{\ell}$ measures the effect of being in a high-conflict district for individuals aged $\ell$ at conflict onset, relative to the reference cohort.
 
 This specification serves two purposes. First, it traces the dose-response curve across childhood ages ($\ell = 0, 1, \ldots, 17$), revealing whether the effect concentrates in any specific age. Second, the coefficients for placebo ages ($\ell = 27, 28, \ldots, 40$) provide a visual test of the parallel trends assumption.
 
 Thus, in the main DiD specification, the control group is the adult cohort aged 26-40 at the beginning of conflict. In the event-study specification, these adult cohorts are shown separately by age and serve as placebo cohorts because they were already adults when the conflict began, their age-specific coefficients should be close to zero if childhood exposure is the relevant channel.
 
-Figure~\ref{fig:event_map} shows the event study based on the conflict intensity by months of war.
+To assess the parallel-trends assumption underlying our DiD design and to 
+explore how the effect varies by age at conflict exposure, we estimate 
+Equation~\ref{eq:event_study} for each migration outcome. 
+Figures~\ref{fig:event_map_month} and 
+\ref{fig:event_map_casualty} present the resulting age-specific 
+coefficients $\gamma_\ell$ for international migration, using the months-of-war 
+and casualty-based intensity measures respectively. Two patterns are notable.
+
+
+
+\drghosh{\textbf{Independence assumption in sign test.} This is a sign test under INDEPENDENCE. But coefficients within a cohort are correlated (similar district exposure, similar national trends). The independence assumption inflates the apparent precision. Replace with: (i) Romano–Wolf step-down for the joint null across ages 0–17; (ii) randomization inference under sharp null of no effect at any age; (iii) a single average-treatment-effect estimate from the DiD as the headline. The 'consistent sign' visual is still compelling but don't lean on the p-value calculation as written.}
+
+
+
+\drghosh{\textbf{Pool ages.} Per-age sample sizes \textasciitilde{}1,500 give wide CIs. Pool ages into 0–5, 6–11, 12–17 for the dose-response analysis — these correspond to early childhood, primary school age, and secondary/teen years. This also maps to plausible mechanisms (early-childhood nutrition; school disruption; teen labor-market entry).}
+
+First, all 18 coefficients in the childhood-exposed cohort 
+($\ell \in \{0, 1, \ldots, 17\}$) are negative across both measures. The 
+probability of observing 18 consecutive negative coefficients under the null 
+hypothesis of no effect is approximately $4 \times 10^{-6}$. Although 
+individual age-specific coefficients have wide confidence intervals due to 
+modest per-age sample sizes (approximately 1{,}500 observations per age), 
+their consistent sign provides strong evidence of a real negative effect.
+
+Second, placebo coefficients ($\ell \geq 27$) are statistically indistinguishable 
+from zero in both figures. Their distribution around zero supports the 
+parallel-trends assumption: in the absence of conflict-induced effects on 
+later cohorts, our DiD estimates would be biased only if cohort trends 
+varied systematically with district-level conflict intensity, which the 
+placebo coefficients suggest is not the case.
+
+Third, a mild dose-response gradient is suggested in the casualty-based 
+specification (Figure~\ref{fig:event_map_casualty}), with younger 
+childhood ages showing somewhat larger negative effects. This pattern, 
+though imprecisely estimated, is consistent with a household- or 
+district-level mechanism whose effects compound more strongly for younger 
+children. The 
+
+
+\drghosh{\textbf{Duration vs. intensity contrast.} The argument that months-of-war (duration) gives a flat dose-response while casualties (intensity) gives a graded one is intriguing — it would suggest different mechanisms (everyone exposed equally to long conflict; younger kids more sensitive to severe conflict). But the precision is low. Frame this as a hypothesis to test in future work, not a finding.}
+
+flatness of the months-of-war specification 
+(Figure~\ref{fig:event_map_month}) suggests that conflict 
+\emph{duration} affects all childhood-exposed cohorts roughly equally, 
+while conflict \emph{intensity} (casualties) may operate through a more 
+graded mechanism. We discuss possible mechanisms in 
+Section~\ref{mechanism}.
+
+
+
+\drghosh{\textbf{Event-study plot conventions.} Only titles appear. Insert the actual event-study plots. Conventions: (i) point estimates as dots, 95\% CIs as shaded band or error bars; (ii) vertical reference line at age 18 (treatment/control boundary); (iii) horizontal dashed line at zero; (iv) include the treatment effect estimate hat-gamma from the pooled DiD as a horizontal reference line over ages 0–17; (v) clearly label x-axis as 'Age at conflict onset (1996)'.}
+
+Figure~\ref{fig:event_map_month} shows the event study based on the conflict intensity by months of war.
 
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.85\textwidth]{Paper/Figures/8a_intl_migrant_months_event_study.png}
     \caption{}
-    \label{fig:event_map}
+    \label{fig:event_map_month}
+\end{figure}
+
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Paper/Figures/8a_intl_migrant_casualties_event_study.png}
+    \caption{}
+    \label{fig:event_map_casualty}
 \end{figure}
