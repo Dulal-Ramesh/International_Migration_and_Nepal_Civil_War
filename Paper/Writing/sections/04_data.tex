@@ -1,21 +1,65 @@
 \label{sec:data}
 
+
+
+\drghosh{\textbf{Remove draft markers.} Remove '[Ramesh: This is new addition to the text]' and similar bracketed notes throughout the draft before sharing with co-authors or referees. They look like incomplete revision markers.}
+
 \ramesh{This is new addition to the text}
+
+
+
+\drghosh{\textbf{Justify the data choice.} Why not the Nepal Living Standards Survey, the 2011 Census, or the DHS? NLFS has the advantage of detailed migration questions but a smaller sample. Also: NLFS is a single cross-section — you cannot follow individuals over time. State this limitation explicitly and explain why the cohort design substitutes for panel data.}
+
+
+
+\drghosh{\textbf{CRITICAL identification issue.} NLFS is a household survey of CURRENT residents in Nepal. International migrants are captured only if at least one household member remains in Nepal to report them as 'absent.' Households that ENTIRELY emigrated (all members abroad) are not in your data. This biases the migration measure: the more conflict pushes whole-household emigration, the more you UNDERSTATE migration in high-conflict districts. Discuss this in Section 3 and again as a robustness concern. Census-linked data or Department of Foreign Employment counts could provide a sanity check.}
+
+
+
+\drghosh{\textbf{District-of-birth merge.} Merging INSEC by 'district of birth' is the right choice (it's pre-determined). But: (i) confirm NLFS actually records district of birth for everyone, not just migrants; (ii) for the treatment cohort (born 1979–1996), 'district of birth' may be the parent's district, which is fine; (iii) note that some children may have been displaced WITHIN Nepal during conflict, so their childhood location $\neq$  district of birth. Address this.}
 
 \subsection{Data Sources}
 
 Our primary outcomes data come from the Nepal Labour Force Survey (NLFS) 2017/18, which provides individual-level information on migration outcomes, demographic characteristics, and educational attainment for approximately 90,000 individuals across all 75 districts of Nepal. Conflict intensity data come from the Informal Sector Service Centre (INSEC) database, which records the date, location, and casualty count of every conflict incident during Nepal's civil war (1996--2006). We aggregate the INSEC data to the district-month level and merge it with the NLFS using district of birth.
 
 
+
+
+\drghosh{\textbf{Exposure window heterogeneity.} The 0–17 vs. 26–40 split is well motivated. But ages 0–17 at conflict ONSET (1996) means some treated children were born BEFORE 1996 and others were born DURING the conflict (1996–2006). 'Childhood exposure' means very different things for an 8-year-old in 1996 (exposed during ages 8–18) vs. a 1-year-old in 1996 (exposed during ages 1–11) vs. a child born in 2000 (exposed during ages 0–6, who would be 17 at survey, EXCLUDED). Clarify the exposure window for each age.}
+
 \subsection{Sample Construction and Cohort Definitions}
 
 Following the difference-in-differences strategy of \cite{10.1257/aer.91.4.795}, we define two cohorts based on age at beginning of conflict in 1996. The \emph{treatment cohort} consists of individuals aged 0--17 at conflict onset (currently 21--38 in NLFS 2017/18), all of whom were children during the conflict period. The \emph{control cohort} consists of individuals aged 26--40 at conflict onset (currently 47--61), all of whom were already adults when the conflict began.
 
+
+
+\drghosh{\textbf{18–25 partially-treated cohort.} Strong rationale, but 7,889 observations is \textasciitilde{}21\% of the analytical sample — not trivial. Add a robustness check: include the 18–25 group as a 'partially treated' cohort and show the result. If their effect is intermediate between 0–17 and 26–40, it bolsters the dose-response story.}
+
 Two design choices shape this sample. First, we exclude individuals aged 18--25 at conflict onset (currently 39--46) from the analysis. These individuals were old enough to make decisions towards early-adult migration, marriage timing, and labor market entry in response to conflict or simply their outcomes reflect adult decisions during conflict. Including them as part of the treatment cohort would contaminate the childhood-exposure interpretation.  Including them as part of the control cohort would violate the assumption that the control group is unaffected by conflict. The exclusion preserves a clean cohort distinction between unambiguously childhood-exposed and unambiguously adult-during-conflict individuals. Second, we cap the control cohort at age 40 at conflict onset (currently 61) to ensure that both cohorts will have comparable working-age windows. The resulting analysis sample includes 37,174 individuals across 75 districts. Robustness checks in Section~\ref{sec:robustness} verify that our findings are not driven by these restrictions.
 
-Table~\ref{tab:sample_construction} summarizes the details on how the analysis analysis sample is achieved. 
+
+
+\drghosh{\textbf{Table reference and caption.} 'Table??' on line 1 — fix the \textbackslash\{\}ref label. Also the table caption refers to 'analysis analysis sample' (duplicated word).}
+
+
+
+\drghosh{\textbf{Table layout.} Panel B exclusions (858 + 32,390 + 4,467 + 0 + 1,958 + 7,889 + 6,231 = 53,793) match the implied drop (90,967 - 37,174 = 53,793) — verify in the typeset version. But the column labeled 'Dropped' confusingly mixes cumulative N and dropped count: row 4a shows 32,390 in the 'Dropped' column without a running N. Restructure as: starting N  to  drop N  to  remaining N at each step. Cleaner for the reader.}
+
+Table~\ref{tab:tab:sample_construction} summarizes the details on how the analysis analysis sample is achieved. 
 
 \input{Paper/Tables/Tables_Summary/2.Sample_Construction}
+
+
+
+\drghosh{\textbf{Typo and cleaner equation.} 'months of ward' appears twice — should be 'months of war'. Also: equation (1) defines the casualty indicator INSIDE the sum AND again below — duplicative and confusing. Cleaner version: conflict\_d1 = sum\_\{m=1..131\} 1\{casualty\_\{dm\} > 0\}, where 1\{·\} is the indicator for at least one casualty in district d, month m. Define once.}
+
+
+
+\drghosh{\textbf{Duration vs. intensity.} Conceptual point: months-of-war counts months with $\geq$1 casualty. A district with 1 casualty per month for 100 months looks the same as a district with 1,000 casualties spread over 100 months. The 'intensity' label is misleading — call this the duration measure. The casualty count is the intensity measure. Both are interesting. Show results for both and discuss what the contrast tells us (you already start this on page 9).}
+
+
+
+\drghosh{\textbf{Distribution figure.} Add a histogram of months-of-war across the 75 districts in the appendix, with a vertical line at the 75th percentile. The reader needs to see whether 75\% is a 'natural' threshold or a sharp break in the distribution.}
 
 \subsection{Conflict Intensity Measures}
 
@@ -39,7 +83,23 @@ Subscripts $d$ and $m$ represent district and month of war. $m$ takes the value 
 
 The treatment cohort consists of individuals aged 0--17 at the onset of conflict in 1996 (currently 21--38 in NLFS 2017) and the control cohort consists of the individuals aged 26--40 at conflict onset (currently 47--61). Individuals aged 18--25 at the beginning of conflict in 1996 (currently 39-46) are excluded from the main analysis sample.
 
+
+
+\drghosh{\textbf{Why 75th percentile?.} Why the 75th and not the 50th, 70th, or 80th? Either: (a) it corresponds to a substantive break in the distribution (show this); or (b) it matches a Maoist 'core area' definition; or (c) it's a convention from prior work (cite Do \& Iyer 2010 or Bohra-Mishra \& Massey if so). Otherwise it looks arbitrary. Robustness with 50/70/80/90 is essential — currently flagged for Section 6.1, which is empty.}
+
+
+
+\drghosh{\textbf{Continuous vs. binary treatment.} The binary 75th-percentile split throws away identifying variation. Best practice: lead with the continuous treatment specification, use the binary version for visual clarity (maps, descriptive plots, event study). At a minimum, report both side-by-side in the main results table.}
+
 For our main DiD specification, we convert the months-of-war measure into a binary indicator $P_d$ equal to one if district $d$ falls above the 75\textsuperscript{th} percentile of the distribution. Figure~\ref{fig:conflict_map} displays the resulting spatial classification: high-conflict districts are concentrated in the mid-western and far-western regions, consistent with the geographic origins and operational base of the Maoist insurgency. The variation in conflict exposure across districts is the spatial source of identification in our DiD design.
+
+
+
+\drghosh{\textbf{Map figure.} Insert the actual map. Suggested overlays: (i) high-conflict districts shaded; (ii) Maoist insurgency origin (Rolpa/Rukum); (iii) major migration corridors (south-eastern Terai  to  India; western highlands  to  Gulf). A second map of pre-1996 migration rates by district would be powerful — if low-conflict and high-conflict districts had similar pre-conflict migration trends, that supports your parallel-trends assumption.}
+
+
+
+\drghosh{\textbf{Selection of insurgency districts.} Mid-/far-western districts were not random recipients of insurgency — they were chosen by the Maoists BECAUSE they were poor, ethnically marginal, and politically excluded. This is a major identification concern. Address head-on: (i) what is the comparison? (mid-western HIGH-conflict vs. mid-western LOW-conflict districts within the same agro-ecological zone?); (ii) include region $\times$ cohort fixed effects as a robustness; (iii) do a placebo using cohorts who turned 18 just BEFORE 1996 — they share district characteristics but were too old for childhood exposure.}
 
 \begin{figure}[!htbp]
     \centering
@@ -58,9 +118,25 @@ For our main DiD specification, we convert the months-of-war measure into a bina
 \end{figure}
 
 We report results using the casualty-based binary measure as a robustness 
-check and the continuous versions of both measures in Appendix~\ref{appendix:robustness}.
+check and the continuous versions of both measures in Appendix.
 
 
+
+
+
+\drghosh{\textbf{Table 2 scope.} You report stats for N=90,109 (full NLFS) — but your analysis sample is N=37,174. The reader needs descriptives for the people who actually identify gamma. Replace Table 2 with: column (1) treatment cohort, column (2) control cohort, column (3) difference + p-value. Keep the full-sample table in the appendix.}
+
+
+
+\drghosh{\textbf{Pre-conflict balance table.} Add a separate balance table comparing high-conflict (P\_d=1) vs. low-conflict (P\_d=0) districts on PRE-CONFLICT (1991 census) covariates: poverty headcount, literacy, ethnic composition, prior migration rates, distance to India, agricultural productivity. This is the identifying comparison and the reader will demand to see whether the two groups looked similar before 1996.}
+
+
+
+\drghosh{\textbf{Missing data.} Education missing for 28,158 obs (31\%) and occupation missing for 65,299 (72\%). These are mostly children under school age or absent migrants. Show the missingness pattern by treatment status — if treatment districts have more missing data (e.g., because more migrants), that's both interesting and concerning.}
+
+
+
+\drghosh{\textbf{Migration outcome universe.} Footnote on 'International Migrant' includes 'those who had been abroad for at least 3 months in the past' — but the variable is defined for the full sample, including children who could not plausibly have migrated. Confirm the universe for each migration outcome. Also: 'Currently Abroad' is more cleanly identified than 'Return Migrant' — make this a primary outcome.}
 
 \subsection{Descriptive Statistics}
 
@@ -68,6 +144,18 @@ check and the continuous versions of both measures in Appendix~\ref{appendix:rob
 \input{Paper/Tables/Tables_Summary/1.Overall_Summary}
 
 \newpage
+
+
+\drghosh{\textbf{Two extensions for this table.} This is one of the most informative tables in the draft. Two extensions: (a) split each migrant column by treatment vs. control cohort (8 columns instead of 4) — this previews who in your sample is migrating; (b) add p-values for differences between baseline and each migrant group.}
+
+
+
+\drghosh{\textbf{Migrant profile interpretation.} International migrants: 90\% male, avg age 28, 50\% in elementary/low-skilled occupations, 47\% Hill High Caste. Returnees: 94\% male, avg age 33, 38\% craft \& manufacturing, 30\% Janajati. This matches the standard Nepal-to-Gulf labor-migration profile. State this in the descriptive section and use it to motivate the heterogeneity analysis (gender, ethnicity, occupation type).}
+
+
+
+\drghosh{\textbf{Internal vs. international migration.} Internal migrants: 69\% male — meaning 31\% female (vs. 10\% for international). Likely marriage migration. This is a different phenomenon from labor migration. Consider analyzing internal and international migration as separate outcomes throughout, since the mechanisms (marriage market, labor market) differ sharply.}
+
 \input{Paper/Tables/Tables_Summary/7.Multigroup_Summary}
 
 
