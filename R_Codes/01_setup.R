@@ -26,7 +26,9 @@
 #   "modelsummary", # Model summary tables
 #   "tinytex",      # LaTeX compilation
 #   "tinytable",    # Tables
-#   "webshot2"      # Save HTML as PNG
+#   "webshot2",     # Save HTML as PNG
+#   "ggrepel",
+#   "ggstar"
 # ))
 
 # For LaTeX packages (run once)
@@ -63,7 +65,8 @@ library(fixest)
 library(stargazer)
 library(modelsummary)
 
-
+library(ggrepel)
+library(ggstar)
 # ==============================================================================
 # SECTION 3: GLOBAL SETTINGS
 # ==============================================================================
@@ -3159,7 +3162,199 @@ generate_casualty_with_events <- function(
 }
 
 # ==============================================================================
-# SECTION 18: TABLES REGISTRY (for auto-generating tables.js)----
+# SECTION 18: HEADLINE CONFLICT MAP (REVISED v4 — borders, KTM north, legend)----
+# ==============================================================================
+# Changes from v3:
+#   - Subtler grey district borders (instead of bright white)
+#   - Kathmandu label moved north (over Tibet) to avoid crowding Sindhuli
+#   - Stars and square now appear in the legend (mapped via aes(shape = ...))
+# ------------------------------------------------------------------------------
+
+
+
+generate_headline_conflict_map <- function(
+    nepal_conflict,
+    treated_var       = "high_conflict_q3_binary",
+    district_name_var = "district_lower",
+    origin_districts  = c("rolpa", "rukum", "sindhuli"),
+    title             = "Treatment and Control Districts: Nepal Civil War",
+    subtitle          = NULL,
+    add_caption       = TRUE,
+    output_path,
+    width             = 11,
+    height            = 6.5,
+    dpi               = 300) {
+  
+  cat("=== Building headline conflict map (v4) ===\n")
+  
+  for (pkg in c("ggrepel", "ggstar")) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      stop("Package '", pkg, "' is required. Install with: install.packages(\"",
+           pkg, "\")")
+    }
+  }
+  
+  # ---- Build a factor for fill: treated vs control ----
+  nepal_conflict$treatment_factor <- factor(
+    ifelse(is.na(nepal_conflict[[treated_var]]),  "Missing",
+           ifelse(nepal_conflict[[treated_var]] == 1,
+                  "High-conflict (treated)",
+                  "Low-conflict (control)")),
+    levels = c("Low-conflict (control)",
+               "High-conflict (treated)",
+               "Missing")
+  )
+  
+  # ---- Origin districts: centroids for star markers ----
+  origin_subset <- nepal_conflict[
+    nepal_conflict[[district_name_var]] %in% tolower(origin_districts), 
+  ]
+  origin_centroids <- suppressWarnings(sf::st_centroid(origin_subset))
+  origin_coords    <- sf::st_coordinates(origin_centroids)
+  
+  origin_points <- data.frame(
+    lon   = origin_coords[, "X"],
+    lat   = origin_coords[, "Y"],
+    label = tools::toTitleCase(as.character(origin_centroids[[district_name_var]])),
+    type  = "First attack (Feb 13, 1996)",
+    stringsAsFactors = FALSE
+  )
+  
+  # ---- Kathmandu marker ----
+  kathmandu <- data.frame(
+    lon   = 85.3240,
+    lat   = 27.7172,
+    label = "Kathmandu",
+    type  = "Capital",
+    stringsAsFactors = FALSE
+  )
+  
+  # ---- Theme ----
+  map_theme <- ggplot2::theme_minimal() +
+    ggplot2::theme(
+      axis.text       = ggplot2::element_blank(),
+      axis.ticks      = ggplot2::element_blank(),
+      axis.title      = ggplot2::element_blank(),
+      panel.grid      = ggplot2::element_blank(),
+      plot.title      = ggplot2::element_text(hjust = 0.5, size = 16, face = "bold"),
+      plot.subtitle   = ggplot2::element_text(hjust = 0.5, size = 12, color = "grey30"),
+      plot.caption    = ggplot2::element_text(hjust = 0, size = 9, color = "grey40",
+                                              margin = ggplot2::margin(t = 12)),
+      plot.margin     = ggplot2::margin(15, 15, 15, 15),
+      legend.position = "right",
+      legend.box      = "vertical",
+      legend.title    = ggplot2::element_text(size = 10, face = "bold"),
+      legend.text     = ggplot2::element_text(size = 9),
+      legend.spacing.y = ggplot2::unit(0.3, "cm")
+    )
+  
+  caption_text <- if (add_caption) {
+    paste0(
+      "Notes: Districts are classified as 'high-conflict' (treated) if above the 75th percentile of months-of-war (1996–2006).\n",
+      "Stars mark Rolpa, Rukum, and Sindhuli, where Maoist forces launched the first coordinated attacks on Feb 13, 1996.\n",
+      "Black square marks Kathmandu, the national capital."
+    )
+  } else {
+    NULL
+  }
+  
+  # ---- Build the plot ----
+  p <- ggplot2::ggplot(nepal_conflict) +
+    # Layer 1: binary fill — note the SUBTLER border color now
+    ggplot2::geom_sf(ggplot2::aes(fill = treatment_factor),
+                     color = "grey90", linewidth = 0.2) +
+    # Layer 2: stars at origin districts (with shape mapped via aes for legend)
+    ggstar::geom_star(
+      data            = origin_points,
+      ggplot2::aes(x = lon, y = lat, starshape = type),
+      fill            = "black",
+      color           = "black",
+      size            = 4
+    ) +
+    # Layer 3: square at Kathmandu (with shape mapped via aes for legend)
+    ggplot2::geom_point(
+      data            = kathmandu,
+      ggplot2::aes(x = lon, y = lat, shape = type),
+      fill            = "black",
+      color           = "black",
+      size            = 3
+    ) +
+    # Layer 4: labels for origin districts
+    ggrepel::geom_text_repel(
+      data            = origin_points,
+      ggplot2::aes(x = lon, y = lat, label = label),
+      size            = 3.4,
+      fontface        = "bold",
+      color           = "black",
+      bg.color        = "white",
+      bg.r            = 0.15,
+      segment.color   = "grey30",
+      segment.size    = 0.4,
+      min.segment.length = 0,
+      box.padding     = 0.7,
+      point.padding   = 0.3,
+      nudge_y         = 0.3,
+      seed            = 1
+    ) +
+    # Layer 5: Kathmandu label (NORTH of the country, in Tibet area)
+    ggrepel::geom_text_repel(
+      data            = kathmandu,
+      ggplot2::aes(x = lon, y = lat, label = label),
+      size            = 3.4,
+      fontface        = "bold",
+      color           = "black",
+      bg.color        = "white",
+      bg.r            = 0.15,
+      segment.color   = "grey30",
+      segment.size    = 0.4,
+      min.segment.length = 0,
+      box.padding     = 0.5,
+      point.padding   = 0.3,
+      nudge_y         = 1.5,             # push NORTH toward Tibet
+      #nudge_x         = -0.5,            # slightly left
+      seed            = 2
+    ) +
+    # Custom binary fill scale
+    ggplot2::scale_fill_manual(
+      values = c(
+        "Low-conflict (control)"     = "grey70",
+        "High-conflict (treated)"    = "grey50",
+        "Missing"                    = "grey90"
+      ),
+      name   = "DiD design",
+      drop   = FALSE
+    ) +
+    # Star scale (for legend)
+    ggstar::scale_starshape_manual(
+      values = c("First attack (Feb 13, 1996)" = 1),
+      name   = NULL,
+      guide  = ggplot2::guide_legend(order = 2,
+                                     override.aes = list(size = 3, fill = "black"))
+    ) +
+    # Point shape scale (for legend)
+    ggplot2::scale_shape_manual(
+      values = c("Capital" = 22),
+      name   = NULL,
+      guide  = ggplot2::guide_legend(order = 3,
+                                     override.aes = list(size = 3, fill = "black"))
+    ) +
+    ggplot2::labs(
+      title    = title,
+      subtitle = subtitle,
+      caption  = caption_text
+    ) +
+    map_theme
+  
+  ggplot2::ggsave(output_path, plot = p,
+                  width = width, height = height, dpi = dpi)
+  
+  cat("=== Exported: headline conflict map →", output_path, "===\n")
+  invisible(p)
+}
+
+
+# ==============================================================================
+# SECTION 19: TABLES REGISTRY (for auto-generating tables.js)----
 # ==============================================================================
 # Populated by register_table() calls inside each table script, right after
 # writeLines(...) for the HTML output. At the end of 00_master.R, we write

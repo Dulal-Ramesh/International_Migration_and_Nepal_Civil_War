@@ -52,8 +52,26 @@ setdiff(conflict_data$district_lower, nepal_sf$district_lower)
 
 # Merge
 nepal_conflict <- merge(nepal_sf, conflict_data, by = "district_lower", all.x = TRUE)
-names(nepal_conflict)
-nrow(nepal_conflict)
+
+# ==============================================================================
+# Construct high-conflict binary indicator (75th percentile of months-of-war)----
+# ==============================================================================
+# This matches the definition of high_conflict_q3_binary in nlss_analysis_sample.
+# Reconstructed here because conflict_intensity.dta only contains the continuous
+# measures, not the binary indicator.
+
+q3_threshold <- quantile(nepal_conflict$mwar_own_any,
+                         probs = 0.75,
+                         na.rm = TRUE)
+
+nepal_conflict$high_conflict_q3_binary <- as.integer(
+  nepal_conflict$mwar_own_any > q3_threshold
+)
+
+cat("75th percentile threshold for months-of-war:", q3_threshold, "\n")
+cat("High-conflict districts:",
+    sum(nepal_conflict$high_conflict_q3_binary, na.rm = TRUE),
+    "out of", nrow(nepal_conflict), "\n")
 
 # ----- Helper: map theme (avoids repeating theme() every time) -----
 map_theme <- theme_minimal() +
@@ -64,50 +82,65 @@ map_theme <- theme_minimal() +
     plot.title = element_text(hjust = 0.5, size = 16, face = "bold")
   )
 
-# Map 1: Months of any conflict
-ggplot(nepal_conflict) +
-  geom_sf(aes(fill = mwar_own_any), color = "white", size = 0.1) +
-  scale_fill_gradient(low = "#FFF5E6", high = "#8B0000", na.value = "grey90") +
-  labs(title = "Nepal Civil Conflict Intensity: Months of War", fill = "Months of\nconflict") +
-  map_theme
-ggsave(file.path(figures, "month_of_war_intensity_1.png"), width = 10, height = 6, dpi = 300)
+# # Map 1: Months of any conflict
+# ggplot(nepal_conflict) +
+#   geom_sf(aes(fill = mwar_own_any), color = "white", size = 0.1) +
+#   scale_fill_gradient(low = "#FFF5E6", high = "#8B0000", na.value = "grey90") +
+#   labs(title = "Nepal Civil Conflict Intensity: Months of War", fill = "Months of\nconflict") +
+#   map_theme
+# ggsave(file.path(figures, "month_of_war_intensity_1.png"), width = 10, height = 6, dpi = 300)
+# 
+# # Map 2: Months of fatal conflict
+# ggplot(nepal_conflict) +
+#   geom_sf(aes(fill = mwar_own_fatal), color = "white", size = 0.1) +
+#   scale_fill_gradient(low = "#FFF5E6", high = "#8B0000", na.value = "grey90") +
+#   labs(title = "Nepal Civil Conflict Intensity: Months of War with Fatal Casualty", fill = "Months of\nconflict") +
+#   map_theme
+# ggsave(file.path(figures, "month_of_war_intensity_2.png"), width = 10, height = 6, dpi = 300)
+# 
+# # Map 3: Total any casualties
+# ggplot(nepal_conflict) +
+#   geom_sf(aes(fill = cas_own_any), color = "white", size = 0.1) +
+#   scale_fill_gradient(low = "#FFF5E6", high = "#8B0000", na.value = "grey90") +
+#   labs(title = "Nepal Civil Conflict Intensity: Number of Any Casualty", fill = "Number of\ncasualties") +
+#   map_theme
+# ggsave(file.path(figures, "month_of_war_intensity_3.png"), width = 10, height = 6, dpi = 300)
+# 
+# # Map 4: Total fatal casualties
+# ggplot(nepal_conflict) +
+#   geom_sf(aes(fill = cas_own_fatal), color = "white", size = 0.1) +
+#   scale_fill_gradient(low = "#FFF5E6", high = "#8B0000", na.value = "grey90") +
+#   labs(title = "Nepal Civil Conflict Intensity: Number of Fatal Casualty", fill = "Number of\ncasualties") +
+#   map_theme
+# ggsave(file.path(figures, "month_of_war_intensity_4.png"), width = 10, height = 6, dpi = 300)
+# 
+# # Map 5: Months of war including neighboring districts (any)
+# ggplot(nepal_conflict) +
+#   geom_sf(aes(fill = mwar_nbr_any), color = "white", size = 0.1) +
+#   scale_fill_gradient(low = "#FFF5E6", high = "#8B0000", na.value = "grey90") +
+#   labs(title = "Nepal Civil Conflict Intensity: Months of War Including Neighboring Districts", fill = "Months of\nconflict") +
+#   map_theme
+# ggsave(file.path(figures, "month_of_war_intensity_5.png"), width = 10, height = 6, dpi = 300)
+# 
+# # Map 6: Casualties including neighboring districts (any)
+# ggplot(nepal_conflict) +
+#   geom_sf(aes(fill = cas_nbr_any), color = "white", size = 0.1) +
+#   scale_fill_gradient(low = "#FFF5E6", high = "#8B0000", na.value = "grey90") +
+#   labs(title = "Nepal Civil Conflict Intensity: Number of Casualties Including Neighboring Districts", fill = "Number of\ncasualties") +
+#   map_theme
+# ggsave(file.path(figures, "month_of_war_intensity_6.png"), width = 10, height = 6, dpi = 300)
 
-# Map 2: Months of fatal conflict
-ggplot(nepal_conflict) +
-  geom_sf(aes(fill = mwar_own_fatal), color = "white", size = 0.1) +
-  scale_fill_gradient(low = "#FFF5E6", high = "#8B0000", na.value = "grey90") +
-  labs(title = "Nepal Civil Conflict Intensity: Months of War with Fatal Casualty", fill = "Months of\nconflict") +
-  map_theme
-ggsave(file.path(figures, "month_of_war_intensity_2.png"), width = 10, height = 6, dpi = 300)
+# ==============================================================================
+# NEW: Headline map with high-conflict shading + first-attack markers-----
+# ==============================================================================
+# Uses the function defined in 01_setup.R Section 19.
+# This is the version intended for the paper and slides.
 
-# Map 3: Total any casualties
-ggplot(nepal_conflict) +
-  geom_sf(aes(fill = cas_own_any), color = "white", size = 0.1) +
-  scale_fill_gradient(low = "#FFF5E6", high = "#8B0000", na.value = "grey90") +
-  labs(title = "Nepal Civil Conflict Intensity: Number of Any Casualty", fill = "Number of\ncasualties") +
-  map_theme
-ggsave(file.path(figures, "month_of_war_intensity_3.png"), width = 10, height = 6, dpi = 300)
+generate_headline_conflict_map(
+  nepal_conflict   = nepal_conflict,
+  origin_districts = c("rolpa", "rukum", "sindhuli"),
+  title            = "Treatment and Control Districts: Nepal Civil War",
+  output_path      = file.path(figures, "headline_conflict_map.png")
+)
 
-# Map 4: Total fatal casualties
-ggplot(nepal_conflict) +
-  geom_sf(aes(fill = cas_own_fatal), color = "white", size = 0.1) +
-  scale_fill_gradient(low = "#FFF5E6", high = "#8B0000", na.value = "grey90") +
-  labs(title = "Nepal Civil Conflict Intensity: Number of Fatal Casualty", fill = "Number of\ncasualties") +
-  map_theme
-ggsave(file.path(figures, "month_of_war_intensity_4.png"), width = 10, height = 6, dpi = 300)
-
-# Map 5: Months of war including neighboring districts (any)
-ggplot(nepal_conflict) +
-  geom_sf(aes(fill = mwar_nbr_any), color = "white", size = 0.1) +
-  scale_fill_gradient(low = "#FFF5E6", high = "#8B0000", na.value = "grey90") +
-  labs(title = "Nepal Civil Conflict Intensity: Months of War Including Neighboring Districts", fill = "Months of\nconflict") +
-  map_theme
-ggsave(file.path(figures, "month_of_war_intensity_5.png"), width = 10, height = 6, dpi = 300)
-
-# Map 6: Casualties including neighboring districts (any)
-ggplot(nepal_conflict) +
-  geom_sf(aes(fill = cas_nbr_any), color = "white", size = 0.1) +
-  scale_fill_gradient(low = "#FFF5E6", high = "#8B0000", na.value = "grey90") +
-  labs(title = "Nepal Civil Conflict Intensity: Number of Casualties Including Neighboring Districts", fill = "Number of\ncasualties") +
-  map_theme
-ggsave(file.path(figures, "month_of_war_intensity_6.png"), width = 10, height = 6, dpi = 300)
+cat("\n=== All conflict intensity maps complete ===\n")
