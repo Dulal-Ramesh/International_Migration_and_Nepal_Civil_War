@@ -1,0 +1,63 @@
+\begin{table}[!h]
+\centering
+\caption{\label{tab:event_study_8c_return_migrant_casualties}Event Study Coefficients: Return Migrant (=1) (Return Migrant, Casualties)}
+\centering
+\fontsize{9}{11}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{cccc}
+\toprule
+Age & Coefficient & Std. Error & 95\% CI\\
+\midrule
+0 & -2.80 & (2.46) & {}[-7.63, 2.03]\\
+1 & -0.18 & (2.22) & {}[-4.53, 4.17]\\
+2 & -0.24 & (3.25) & {}[-6.62, 6.13]\\
+3 & -2.27 & (3.27) & {}[-8.68, 4.15]\\
+4 & -3.34 & (2.55) & {}[-8.34, 1.65]\\
+\addlinespace
+5 & -4.28* & (2.35) & {}[-8.89, 0.34]\\
+6 & -5.10 & (3.27) & {}[-11.52, 1.32]\\
+7 & -3.21 & (2.73) & {}[-8.56, 2.14]\\
+8 & -2.50 & (2.67) & {}[-7.72, 2.73]\\
+9 & -1.30 & (2.80) & {}[-6.78, 4.18]\\
+\addlinespace
+10 & -2.94 & (3.06) & {}[-8.93, 3.06]\\
+11 & -2.63 & (2.06) & {}[-6.66, 1.40]\\
+12 & -3.06 & (3.05) & {}[-9.03, 2.91]\\
+13 & -0.33 & (3.14) & {}[-6.49, 5.82]\\
+14 & -3.19 & (2.58) & {}[-8.25, 1.86]\\
+\addlinespace
+15 & -2.73 & (2.45) & {}[-7.53, 2.08]\\
+16 & 0.97 & (2.87) & {}[-4.67, 6.60]\\
+17 & -5.75** & (2.32) & {}[-10.29, -1.20]\\
+26 & 0 (ref) &  & \\
+27 & 1.84 & (3.10) & {}[-4.23, 7.91]\\
+\addlinespace
+28 & -0.45 & (2.43) & {}[-5.22, 4.31]\\
+29 & -0.99 & (2.52) & {}[-5.93, 3.95]\\
+30 & -3.66 & (2.38) & {}[-8.33, 1.01]\\
+31 & 1.53 & (2.00) & {}[-2.40, 5.45]\\
+32 & -4.36* & (2.53) & {}[-9.31, 0.59]\\
+\addlinespace
+33 & -1.85 & (2.94) & {}[-7.62, 3.92]\\
+34 & -1.63 & (3.20) & {}[-7.90, 4.64]\\
+35 & -1.32 & (2.08) & {}[-5.39, 2.76]\\
+36 & 2.73 & (3.57) & {}[-4.25, 9.72]\\
+37 & -2.50 & (2.34) & {}[-7.08, 2.08]\\
+\addlinespace
+38 & 1.28 & (2.95) & {}[-4.51, 7.07]\\
+39 & 0.11 & (2.57) & {}[-4.92, 5.14]\\
+40 & -1.05 & (2.44) & {}[-5.83, 3.72]\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Notes:} 
+\item Outcome: Return Migrant (=1), scaled by 100.
+\item Coefficients from feols(Y ~ i(age_at_conflict_start, high_conflict_casualty_binary, ref = 26) | dist + age) with district-clustered SEs.
+\item Age 26 is the reference category (coefficient set to 0).
+\item Each row is the gamma_l coefficient — the effect of being in a high-conflict district for someone of that age in 1996, relative to the reference age.
+\item Coefficients near zero for ages above the cutoff serve as a placebo / parallel-trends test.
+\item *** p<0.01, ** p<0.05, * p<0.10.
+\item Source: Nepal Labour Force Survey 2017/18; INSEC.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}

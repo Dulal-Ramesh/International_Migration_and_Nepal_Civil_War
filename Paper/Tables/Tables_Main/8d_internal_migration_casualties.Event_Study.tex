@@ -1,0 +1,63 @@
+\begin{table}[!h]
+\centering
+\caption{\label{tab:event_study_8d_internal_migration_casualties}Event Study Coefficients: Internal Migration (=1) (Internal Migration, Casualties)}
+\centering
+\fontsize{9}{11}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{cccc}
+\toprule
+Age & Coefficient & Std. Error & 95\% CI\\
+\midrule
+0 & -0.93 & (2.78) & {}[-6.38, 4.51]\\
+1 & 0.93 & (2.29) & {}[-3.55, 5.41]\\
+2 & -0.69 & (2.07) & {}[-4.75, 3.38]\\
+3 & 2.84 & (1.96) & {}[-1.00, 6.69]\\
+4 & -3.75 & (2.45) & {}[-8.54, 1.05]\\
+\addlinespace
+5 & 0.64 & (2.07) & {}[-3.43, 4.70]\\
+6 & -2.07 & (1.97) & {}[-5.94, 1.80]\\
+7 & -0.17 & (1.89) & {}[-3.88, 3.54]\\
+8 & -1.82 & (2.28) & {}[-6.28, 2.64]\\
+9 & -0.67 & (2.85) & {}[-6.26, 4.92]\\
+\addlinespace
+10 & 2.37 & (2.67) & {}[-2.88, 7.61]\\
+11 & -4.02** & (1.54) & {}[-7.05, -1.00]\\
+12 & 1.03 & (2.94) & {}[-4.73, 6.78]\\
+13 & -2.65 & (1.84) & {}[-6.26, 0.96]\\
+14 & -2.59 & (1.89) & {}[-6.30, 1.12]\\
+\addlinespace
+15 & -1.43 & (2.20) & {}[-5.74, 2.88]\\
+16 & 1.24 & (2.72) & {}[-4.09, 6.56]\\
+17 & -0.34 & (1.72) & {}[-3.71, 3.03]\\
+26 & 0 (ref) &  & \\
+27 & -3.12** & (1.56) & {}[-6.18, -0.05]\\
+\addlinespace
+28 & 0.40 & (2.07) & {}[-3.66, 4.46]\\
+29 & -3.83** & (1.49) & {}[-6.76, -0.91]\\
+30 & -0.62 & (2.40) & {}[-5.33, 4.09]\\
+31 & -2.07 & (1.53) & {}[-5.08, 0.94]\\
+32 & -1.18 & (1.90) & {}[-4.91, 2.54]\\
+\addlinespace
+33 & 1.47 & (1.68) & {}[-1.82, 4.76]\\
+34 & -1.05 & (2.03) & {}[-5.03, 2.92]\\
+35 & -3.23** & (1.37) & {}[-5.92, -0.54]\\
+36 & -0.73 & (1.59) & {}[-3.86, 2.39]\\
+37 & -0.68 & (1.74) & {}[-4.09, 2.74]\\
+\addlinespace
+38 & -3.16** & (1.29) & {}[-5.69, -0.62]\\
+39 & -2.41 & (1.68) & {}[-5.72, 0.89]\\
+40 & -2.16 & (1.70) & {}[-5.49, 1.16]\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Notes:} 
+\item Outcome: Internal Migration (=1), scaled by 100.
+\item Coefficients from feols(Y ~ i(age_at_conflict_start, high_conflict_casualty_binary, ref = 26) | dist + age) with district-clustered SEs.
+\item Age 26 is the reference category (coefficient set to 0).
+\item Each row is the gamma_l coefficient — the effect of being in a high-conflict district for someone of that age in 1996, relative to the reference age.
+\item Coefficients near zero for ages above the cutoff serve as a placebo / parallel-trends test.
+\item *** p<0.01, ** p<0.05, * p<0.10.
+\item Source: Nepal Labour Force Survey 2017/18; INSEC.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}

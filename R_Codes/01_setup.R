@@ -2863,7 +2863,303 @@ generate_subcohort_did_table <- function(data,
 
 
 # ==============================================================================
-# SECTION 14: TABLES REGISTRY (for auto-generating tables.js)----
+# SECTION 15: CONFLICT TIMELINE FIGURE ----
+# ==============================================================================
+
+generate_conflict_timeline <- function(
+    events       = NULL,
+    title        = "Timeline of Nepal's Civil War (1996–2006)",
+    subtitle     = NULL,
+    output_path,
+    width        = 11,
+    height       = 4.5,
+    dpi          = 200) {
+  
+  cat("=== Building conflict timeline figure ===\n")
+  
+  if (is.null(events)) {
+    events <- data.frame(
+      date  = as.Date(c("1996-02-13", "2001-06-01", "2001-11-26",
+                        "2005-02-01", "2006-04-24", "2006-11-21")),
+      label = c("Maoist People's War\ndeclared",
+                "Royal massacre:\nKing Birendra killed",
+                "State of emergency;\nRoyal Nepal Army deployed",
+                "King Gyanendra's coup\n(direct rule)",
+                "Jana Andolan II:\npro-democracy protests",
+                "Comprehensive\nPeace Accord signed"),
+      side  = c("above", "below", "above", "below", "above", "below"),
+      stringsAsFactors = FALSE
+    )
+  }
+  
+  time_min <- as.Date("1995-09-01")
+  time_max <- as.Date("2007-09-01")
+  
+  events$y_label <- ifelse(events$side == "above", 1, -1)
+  events$y_tip   <- ifelse(events$side == "above", 0.05, -0.05)
+  
+  p <- ggplot() +
+    geom_segment(aes(x = time_min + 90, xend = time_max - 90,
+                     y = 0, yend = 0),
+                 arrow = arrow(length = unit(0.2, "cm"), ends = "both"),
+                 color = "grey30", linewidth = 0.6) +
+    geom_segment(data = events,
+                 aes(x = date, xend = date, y = y_tip, yend = y_label * 0.85),
+                 color = "grey50", linewidth = 0.4) +
+    geom_point(data = events,
+               aes(x = date, y = 0),
+               size = 2.6, color = "#1f4e79") +
+    geom_text(data = events,
+              aes(x = date, y = y_label,
+                  label = label,
+                  vjust = ifelse(side == "above", 0, 1)),
+              size = 2.9, lineheight = 0.95, color = "grey20") +
+    scale_x_date(date_breaks = "1 year", date_labels = "%Y",
+                 limits = c(time_min, time_max),
+                 expand = c(0, 0)) +
+    coord_cartesian(ylim = c(-1.4, 1.4)) +
+    labs(title = title, subtitle = subtitle, x = NULL, y = NULL) +
+    theme_void(base_size = 11) +
+    theme(
+      plot.title       = element_text(face = "bold", size = 13, hjust = 0.5),
+      plot.subtitle    = element_text(color = "grey30", size = 11, hjust = 0.5),
+      axis.text.x      = element_text(color = "grey30", size = 9,
+                                      margin = margin(t = 4)),
+      plot.margin      = margin(15, 15, 10, 15)
+    )
+  
+  ggsave(output_path, plot = p, width = width, height = height, dpi = dpi)
+  
+  cat("=== Exported: conflict timeline →", output_path, "===\n")
+  invisible(p)
+}
+
+
+# ==============================================================================
+# SECTION 16: CASUALTIES TIME-SERIES FIGURE ----
+# ==============================================================================
+
+generate_casualty_timeseries <- function(
+    data,
+    outcome_filter   = c(1),
+    outcome_label    = "Fatalities",
+    title            = "Monthly Conflict Fatalities, 1996–2006",
+    subtitle         = "By perpetrator (Maoist vs. State Forces)",
+    file_label       = "conflict_casualties_monthly",
+    figure_dir,
+    width            = 10,
+    height           = 5,
+    dpi              = 200) {
+  
+  cat("=== Building casualty time-series figure ===\n")
+  
+  d <- data
+  if (!is.null(outcome_filter)) {
+    d <- d[d$incident_outcome %in% outcome_filter, ]
+  }
+  d$ym_date <- as.Date(paste(d$year, d$month, 1, sep = "-"))
+  d <- d[d$ym_date >= as.Date("1996-02-01") &
+           d$ym_date <= as.Date("2006-11-30"), ]
+  
+  monthly <- d %>%
+    group_by(ym_date) %>%
+    summarise(
+      by_state  = sum(by_state  == 1, na.rm = TRUE),
+      by_maoist = sum(by_maoist == 1, na.rm = TRUE),
+      total     = n(),
+      .groups   = "drop"
+    )
+  
+  long_df <- tidyr::pivot_longer(
+    monthly,
+    cols      = c("by_state", "by_maoist"),
+    names_to  = "perpetrator",
+    values_to = "count"
+  )
+  long_df$perpetrator <- factor(
+    long_df$perpetrator,
+    levels = c("by_state", "by_maoist"),
+    labels = c("By State Forces", "By Maoists")
+  )
+  
+  csv_path <- file.path(figure_dir, paste0(file_label, "_data.csv"))
+  write.csv(monthly, csv_path, row.names = FALSE)
+  
+  state_color  <- "#7a7a7a"
+  maoist_color <- "#1f4e79"
+  
+  p <- ggplot(long_df, aes(x = ym_date, y = count,
+                           color = perpetrator,
+                           linetype = perpetrator)) +
+    geom_line(linewidth = 0.7, na.rm = TRUE) +
+    scale_color_manual(values = c("By State Forces" = state_color,
+                                  "By Maoists"      = maoist_color)) +
+    scale_linetype_manual(values = c("By State Forces" = "solid",
+                                     "By Maoists"      = "solid")) +
+    scale_x_date(date_breaks = "1 year", date_labels = "%Y",
+                 expand = c(0.01, 0),
+                 limits = c(as.Date("1995-09-01"), as.Date("2007-09-01"))) +
+    labs(
+      title    = title,
+      subtitle = subtitle,
+      x        = "Month",
+      y        = paste("Number of", tolower(outcome_label), "per month"),
+      color    = "Perpetrator",
+      linetype = "Perpetrator",
+      caption  = paste0("Data: INSEC Nepal conflict database. N = ",
+                        nrow(d), " ", tolower(outcome_label),
+                        " over the conflict period.")
+    ) +
+    theme_minimal(base_size = 11) +
+    theme(
+      legend.position    = "bottom",
+      plot.title         = element_text(face = "bold", size = 13, hjust = 0.5),
+      plot.subtitle      = element_text(color = "grey30", size = 11, hjust = 0.5),
+      plot.caption       = element_text(color = "grey40", size = 9, hjust = 0),
+      panel.grid.minor   = element_blank(),
+      panel.grid.major.x = element_blank(),
+      axis.line          = element_line(color = "grey50", linewidth = 0.4),
+      axis.ticks         = element_line(color = "grey50", linewidth = 0.4)
+    )
+  
+  fig_path <- file.path(figure_dir, paste0(file_label, ".png"))
+  ggsave(fig_path, plot = p, width = width, height = height, dpi = dpi)
+  
+  cat("=== Exported:", file_label, "(.png + _data.csv) ===\n")
+  invisible(list(plot = p, monthly = monthly))
+}
+
+
+# ==============================================================================
+# SECTION 17: COMBINED CASUALTIES + EVENT MARKERS FIGURE ----
+# ==============================================================================
+
+generate_casualty_with_events <- function(
+    data,
+    events           = NULL,
+    outcome_filter   = c(1),
+    outcome_label    = "Fatalities",
+    title            = "Monthly Conflict Fatalities with Key Events, 1996–2006",
+    subtitle         = "By perpetrator (Maoist vs. State Forces)",
+    file_label       = "conflict_casualties_with_events",
+    figure_dir,
+    width            = 11,
+    height           = 5.5,
+    dpi              = 200) {
+  
+  cat("=== Building combined casualties + events figure ===\n")
+  
+  if (is.null(events)) {
+    events <- data.frame(
+      date     = as.Date(c("1996-02-13", "2001-06-01", "2001-11-26",
+                           "2005-02-01", "2006-04-24", "2006-11-21")),
+      label    = c("War declared\n(Feb 1996)",
+                   "Royal massacre\n(Jun 2001)",
+                   "State of emergency\n(Nov 2001)",
+                   "Royal coup\n(Feb 2005)",
+                   "Jana Andolan II\n(Apr 2006)",
+                   "Peace Accord\n(Nov 2006)"),
+      y_offset = c(1.20, 1.00, 1.20, 1.20, 1.20, 1.00),
+      stringsAsFactors = FALSE
+    )
+  }
+  
+  d <- data
+  if (!is.null(outcome_filter)) {
+    d <- d[d$incident_outcome %in% outcome_filter, ]
+  }
+  d$ym_date <- as.Date(paste(d$year, d$month, 1, sep = "-"))
+  d <- d[d$ym_date >= as.Date("1996-02-01") &
+           d$ym_date <= as.Date("2006-11-30"), ]
+  
+  monthly <- d %>%
+    group_by(ym_date) %>%
+    summarise(
+      by_state  = sum(by_state  == 1, na.rm = TRUE),
+      by_maoist = sum(by_maoist == 1, na.rm = TRUE),
+      total     = n(),
+      .groups   = "drop"
+    )
+  
+  csv_path <- file.path(figure_dir, paste0(file_label, "_data.csv"))
+  write.csv(monthly, csv_path, row.names = FALSE)
+  
+  long_df <- tidyr::pivot_longer(
+    monthly,
+    cols      = c("by_state", "by_maoist"),
+    names_to  = "perpetrator",
+    values_to = "count"
+  )
+  long_df$perpetrator <- factor(
+    long_df$perpetrator,
+    levels = c("by_state", "by_maoist"),
+    labels = c("By State Forces", "By Maoists")
+  )
+  
+  y_max <- max(c(monthly$by_state, monthly$by_maoist), na.rm = TRUE)
+  y_top <- y_max * 1.40
+  events$y_position <- y_max * events$y_offset * 1.10
+  
+  state_color  <- "#1f4e79"
+  maoist_color <- "#bf6c4f"
+  event_color  <- "#000000"
+  
+  p <- ggplot(long_df, aes(x = ym_date, y = count,
+                           color = perpetrator)) +
+    geom_vline(data = events,
+               aes(xintercept = date),
+               color    = event_color,
+               linetype = "dashed",
+               linewidth = 0.45,
+               alpha    = 0.7) +
+    geom_line(linewidth = 0.7, na.rm = TRUE) +
+    geom_text(data = events,
+              aes(x = date, y = y_position, label = label),
+              inherit.aes = FALSE,
+              hjust       = 0,
+              vjust       = 1,
+              nudge_x     = 30,
+              size        = 2.7,
+              lineheight  = 0.95,
+              color       = event_color) +
+    scale_color_manual(values = c("By State Forces" = state_color,
+                                  "By Maoists"      = maoist_color)) +
+    scale_x_date(date_breaks = "1 year", date_labels = "%Y",
+                 expand = c(0.01, 0),
+                 limits = c(as.Date("1995-09-01"), as.Date("2007-09-01"))) +
+    coord_cartesian(ylim = c(0, y_top), clip = "off") +
+    labs(
+      title    = title,
+      subtitle = subtitle,
+      x        = "Month",
+      y        = paste("Number of", tolower(outcome_label), "per month"),
+      color    = "Perpetrator",
+      caption  = paste0("Data: INSEC Nepal conflict database. ",
+                        "Vertical dashed lines mark key political events. ",
+                        "N = ", nrow(d), " ", tolower(outcome_label), ".")
+    ) +
+    theme_minimal(base_size = 11) +
+    theme(
+      legend.position    = "bottom",
+      plot.title         = element_text(face = "bold", size = 13, hjust = 0.5),
+      plot.subtitle      = element_text(color = "grey30", size = 11, hjust = 0.5),
+      plot.caption       = element_text(color = "grey40", size = 9, hjust = 0),
+      panel.grid.minor   = element_blank(),
+      panel.grid.major.x = element_blank(),
+      axis.line          = element_line(color = "grey50", linewidth = 0.4),
+      axis.ticks         = element_line(color = "grey50", linewidth = 0.4),
+      plot.margin        = margin(15, 15, 10, 15)
+    )
+  
+  fig_path <- file.path(figure_dir, paste0(file_label, ".png"))
+  ggsave(fig_path, plot = p, width = width, height = height, dpi = dpi)
+  
+  cat("=== Exported:", file_label, "(.png + _data.csv) ===\n")
+  invisible(list(plot = p, monthly = monthly))
+}
+
+# ==============================================================================
+# SECTION 18: TABLES REGISTRY (for auto-generating tables.js)----
 # ==============================================================================
 # Populated by register_table() calls inside each table script, right after
 # writeLines(...) for the HTML output. At the end of 00_master.R, we write
