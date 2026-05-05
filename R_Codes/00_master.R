@@ -90,6 +90,9 @@ source(file.path(r_scripts, "02_data_cleaning.R"))
 cat("========================================================\n")
 cat(" STEP 3: Analysis Tables & Event Study\n")
 cat("========================================================\n")
+
+source(file.path(r_scripts, "03_00_Conflict_Context_Figures.R"))
+
 source(file.path(r_scripts, "03_01_summary_overall.R"))
 
 source(file.path(r_scripts, "03_02_sample_construction.R"))
