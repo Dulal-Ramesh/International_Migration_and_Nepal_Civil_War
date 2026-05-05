@@ -29,10 +29,15 @@
 \usepackage{threeparttable}
 \usepackage{lineno} % uncomment for line numbers during review
 \usepackage{comment}
-\usepackage{xcolor}
-\newcommand{\ramesh}[1]{\textcolor{red}{[Ramesh: #1]}}
-\newcommand{\drghosh}[1]{\textcolor{red}{[Dr. Ghosh: #1]}}
+\usepackage{soul}
 
+\usepackage{xcolor}
+\usepackage{datetime2}
+\newcommand{\ramesh}[1]{\textcolor{red}{[Ramesh: #1]}}
+\newcommand{\drghosh}[1]{\textcolor{blue}{[Dr. Ghosh: #1]}}
+
+\usepackage[normalem]{ulem}
+\newcommand{\rameshdone}[1]{\textcolor{blue}{\sout{[#1]}}}
 
 % ---------- Setup ----------
 \graphicspath{{figures/}}
@@ -75,7 +80,7 @@ urlcolor=black
 
 % ---------- Abstract ----------
 \begin{abstract}
-\input{Paper/Writing/sections/01_abstract}
+\input{Paper/Writing/sections/00_abstract}
 \end{abstract}
 
 
@@ -87,7 +92,12 @@ urlcolor=black
 
 % ---------- Main Sections ----------
 \section{Introduction}
-\input{Paper/Writing/sections/02_intro}
+\input{Paper/Writing/sections/01_intro}
+
+\newpage
+
+\section{Background: The Nepali Civil War}
+\input{Paper/Writing/sections/02_background}
 
 \newpage
 \section{Related Literature}
