@@ -3238,7 +3238,7 @@ generate_headline_conflict_map <- function(
       panel.grid      = ggplot2::element_blank(),
       plot.title      = ggplot2::element_text(hjust = 0.5, size = 16, face = "bold"),
       plot.subtitle   = ggplot2::element_text(hjust = 0.5, size = 12, color = "grey30"),
-      plot.caption    = ggplot2::element_text(hjust = 0, size = 9, color = "grey40",
+      plot.caption    = ggplot2::element_text(hjust = 0, size = 9, color = "grey0",
                                               margin = ggplot2::margin(t = 12)),
       plot.margin     = ggplot2::margin(15, 15, 15, 15),
       legend.position = "right",
@@ -3250,10 +3250,7 @@ generate_headline_conflict_map <- function(
   
   caption_text <- if (add_caption) {
     paste0(
-      "Notes: Districts are classified as 'high-conflict' (treated) if above the 75th percentile of months-of-war (1996–2006).\n",
-      "Stars mark Rolpa, Rukum, and Sindhuli, where Maoist forces launched the first coordinated attacks on Feb 13, 1996.\n",
-      "Black square marks Kathmandu, the national capital."
-    )
+      "Notes: Districts are classified as 'high-conflict' (treated) if above the 75th percentile of months-of-war (1996–2006).\n")
   } else {
     NULL
   }

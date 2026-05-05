@@ -139,7 +139,7 @@ map_theme <- theme_minimal() +
 generate_headline_conflict_map(
   nepal_conflict   = nepal_conflict,
   origin_districts = c("rolpa", "rukum", "sindhuli"),
-  title            = "Treatment and Control Districts: Nepal Civil War",
+  title            = "",
   output_path      = file.path(figures, "headline_conflict_map.png")
 )
 
